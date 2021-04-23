@@ -18,6 +18,9 @@ public class Parser {
     
     public static void main(String[] args) {
 //        
+        // ALSO INCLUDE HOW FAR DOWN?
+        
+        
 //        try {
 //            BufferedReader br = new BufferedReader(new FileReader("data/raw/link_annotated_text.jsonl"));
 //            BufferedWriter bw = new BufferedWriter(new FileWriter("data/jsonTest.txt"));            
