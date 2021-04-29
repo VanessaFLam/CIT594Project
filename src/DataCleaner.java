@@ -11,10 +11,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Provides functionality to parse raw Wikipedia data to files used to populate data structures.
+ * Provides functionality to clean / parse raw Wikipedia data to files used to populate data structures.
  * @author Jackson Golden
  */
-public class Parser {
+public class DataCleaner {
 
     /**
      * Takes in a csv file with four columns (page_id, item_id, title, views) and copies just
@@ -44,6 +44,7 @@ public class Parser {
      * rows in the output file (not including header).
      */
     public static int parseLinkData(String inFile, String outFile) {
+    
         return 0;
     }
     
