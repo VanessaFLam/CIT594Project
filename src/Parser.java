@@ -10,9 +10,22 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * Provides functionality to parse raw Wikipedia data to files used to populate data structures.
+ * @author Jackson Golden
+ */
 public class Parser {
 
-    
+    /**
+     * @param inFile The path of the csv file to process. The "full" file can be found at
+     * "/data/raw/page.csv".
+     * @param outFile The path of the csv file to write to. This file should be stored in the
+     * "/data/clean/" directory.
+     * @return
+     */
+    public static int getPageIds(String inFile, String outFile) {
+        return 0;
+    }
     
     
     
