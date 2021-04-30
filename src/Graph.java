@@ -91,6 +91,6 @@ public interface Graph
      * @param v - the node
      * @return the array of neighbors
      */
-    Collection<Object> neighbors(int v);
+    int[] neighbors(int v);
 
 }

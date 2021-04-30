@@ -303,7 +303,7 @@ public class DataCleaner {
 //                cleanPageCSV("data/raw/page_first_10.csv", "data/clean/page_ids_first_10.csv"));
 //        System.out.println(
 //                cleanPageCSV("data/raw/page_first_100.csv", "data/clean/page_ids_first_100.csv"));
-        
+//        
         
         /* CREATE FULL PAGE_IDS FILE (TAKES ~15 SECONDS) */
 //        System.out.println(
@@ -311,20 +311,20 @@ public class DataCleaner {
        
         
         /* CREATE SNIPPET GRAPH FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
-//        getLinkFileSnippet(1);
-//        getLinkFileSnippet(10);
-//        getLinkFileSnippet(100);
-//        System.out.println(parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
-//                "data/clean/graph_file_first_1.mtx"));
-//        System.out.println(parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
-//                "data/clean/graph_file_first_10.mtx"));
-//        System.out.println(parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
-//                                            "data/clean/graph_file_first_100.mtx"));
+        getLinkFileSnippet(1);
+        getLinkFileSnippet(10);
+        getLinkFileSnippet(100);
+        System.out.println(parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
+                "data/clean/graph_file_first_1.mtx"));
+        System.out.println(parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
+                "data/clean/graph_file_first_10.mtx"));
+        System.out.println(parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
+                                            "data/clean/graph_file_first_100.mtx"));
 
         
         /* CREATE FULL GRAPH FILE (TAKES ~15 MIN) */
-        System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
-                                              "data/clean/full_graph_file.mtx"));
+//        System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
+//                                              "data/clean/full_graph_file.mtx"));
         
         long endTime   = System.nanoTime();
         long totalTime = endTime - startTime;

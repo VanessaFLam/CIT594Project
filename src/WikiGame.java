@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
@@ -15,6 +16,8 @@ public class WikiGame implements IWikiGame {
 
     Graph g;
     int numOfNodes;
+    Map<Integer, Integer> wikiIDtoNodeID;
+    Map<String, Integer> articleNametoNodeID;
     
     public static final Integer DefualtEdgeWeight = 1;
     
@@ -28,7 +31,18 @@ public class WikiGame implements IWikiGame {
     // =============================================================================
     // = Methods
     // =============================================================================
-
+    
+    
+    
+    //TODO: Method to create the hashmap
+    public int mapWikiIDtoNodeID(String filePath) {
+    	return 0;
+    }
+    
+    public int mapArticleNametoNodeID(String filePath) {
+    	return 0;
+    }
+    
     @Override
     public int loadGraphFromDataSet(String filePath) {
         
@@ -76,7 +90,7 @@ public class WikiGame implements IWikiGame {
     }
 
     @Override
-    public Collection<Integer> findPath(int source, int destination) {
+    public Collection<Integer> findPath(int source, int destination, String param) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -500,6 +514,7 @@ public class WikiGame implements IWikiGame {
             default:    weight = g.weight(v, u);
                         break;
         }
+        return weight;
     }
     
     // =============================================================================

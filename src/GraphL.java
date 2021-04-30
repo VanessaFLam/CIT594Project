@@ -151,7 +151,7 @@ public class GraphL
     }
 
     // Returns an array containing the indicies of the neighbors of v
-    public Collection<Object> neighbors(int v)
+    public int[] neighbors(int v)
     {
         int cnt = 0;
         Edge curr;
@@ -161,7 +161,7 @@ public class GraphL
         cnt = 0;
         for (curr = nodeArray[v].next; curr != null; curr = curr.next)
             temp[cnt++] = curr.vertex;
-        return null;
+        return temp;
     }
 
 
