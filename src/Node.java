@@ -15,6 +15,55 @@ public class Node implements INode {
 		this.outdegree = 0;
 	}
 	
+	
+	public int getIndex() {
+        return index;
+    }
+
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+
+    public int getWikiId() {
+        return wiki_id;
+    }
+
+
+    public void setWikiId(int wiki_id) {
+        this.wiki_id = wiki_id;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public int getOutdegree() {
+        return outdegree;
+    }
+
+
+    public void setOutdegree(int outdegree) {
+        this.outdegree = outdegree;
+    }
+
+    public int getIndegree() {
+        return indegree;
+    }
+
+    public void setIndegree(int indegree) {
+        this.indegree = indegree;
+    }
+
+	
 	public void incrementIndegree() {
 		this.indegree++;
 	}
