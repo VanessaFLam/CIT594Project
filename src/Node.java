@@ -2,14 +2,14 @@
 public class Node implements INode {
 	
 	int index;
-	int wiki_id;
+	int wikiID;
 	String name;
 	int indegree;
 	int outdegree;
 	
-	public Node(int index, int wiki_id, String name) {
+	public Node(int index, int wikiID, String name) {
 		this.index = index;
-		this.wiki_id = wiki_id;
+		this.wikiID = wikiID;
 		this.name = name;
 		this.indegree = 0;
 		this.outdegree = 0;
@@ -27,12 +27,12 @@ public class Node implements INode {
 
 
     public int getWikiId() {
-        return wiki_id;
+        return wikiID;
     }
 
 
-    public void setWikiId(int wiki_id) {
-        this.wiki_id = wiki_id;
+    public void setWikiId(int wikiID) {
+        this.wikiID = wikiID;
     }
 
 

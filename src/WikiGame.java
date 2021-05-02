@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class WikiGame implements IWikiGame {
     // =============================================================================
     public WikiGame() {
         g = new GraphL();
+        wikiIDtoNodeID = new HashMap<Integer, Integer>();
+        articleNametoNodeID = new HashMap<String, Integer>();
     }
 
     // =============================================================================
@@ -36,11 +39,59 @@ public class WikiGame implements IWikiGame {
     
     //TODO: Method to create the hashmap
     public int mapWikiIDtoNodeID(String filePath) {
-    	return 0;
+    	try {
+            // created buffered file reader
+            FileReader fr = new FileReader(filePath);
+            BufferedReader br = new BufferedReader(fr);
+            
+            String line = br.readLine();
+            
+            while (line != null) {
+            	String[] toks = line.split("\\\\s+");
+	            
+	            int wikiID = Integer.parseInt(toks[1]);
+	            int nodeID = Integer.parseInt(toks[0]);
+	            
+	            wikiIDtoNodeID.put(wikiID, nodeID);
+	            line = br.readLine();
+            }
+	            
+            return wikiIDtoNodeID.size();
+    	} catch (IOException e) {
+            // print error message
+            System.out.println("Error reading input file: " + filePath);
+        }
+        return -1;    
     }
     
     public int mapArticleNametoNodeID(String filePath) {
-    	return 0;
+    	try {
+            // created buffered file reader
+            FileReader fr = new FileReader(filePath);
+            BufferedReader br = new BufferedReader(fr);
+            
+            //skip the header line
+            br.readLine();
+            
+            String line = br.readLine();
+            
+            while (line != null) {
+            	String[] toks = line.split("\\\\s+");
+	            
+            	String articleName = toks[1];
+	            int wikiID = Integer.parseInt(toks[0]);
+	            int nodeID = wikiIDtoNodeID.get(wikiID);
+	            
+	            articleNametoNodeID.put(articleName, nodeID);
+	            line = br.readLine();
+            }
+	            
+            return articleNametoNodeID.size();
+    	} catch (IOException e) {
+            // print error message
+            System.out.println("Error reading input file: " + filePath);
+        }
+        return -1;   
     }
     
     @Override
