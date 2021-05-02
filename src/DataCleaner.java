@@ -21,6 +21,7 @@ import org.json.simple.parser.ParseException;
  */
 public class DataCleaner {
 
+    
     /**
      * Takes in a csv file with four columns (page_id, item_id, title, views) and copies just
      * page_id and title to a new csv file.
@@ -66,6 +67,7 @@ public class DataCleaner {
         return -1;
     }
     
+    // ---------------------------------------------------------------------------------------------
     
     /**
      * Copies the first {@code n} lines of the "full" csv file "data/raw/page.csv"
@@ -104,21 +106,29 @@ public class DataCleaner {
 
     }
     
+    // ---------------------------------------------------------------------------------------------
     
     /**
-     * Parses a JSONL file of links as given by the Wikipedia data and translates to a .mtx file.
-     * This file has a header row of form <# articles> <# links> (i.e., <# vertices> <# edges>) and
-     * data rows of the form <page_id_from> <page_id_to> <link_section> (i.e., there is a link from 
-     * the article given by page_id_from to the article given by page_id_to in the link_section-th
-     * section of the article).
+     * Parses a JSONL file of links as given by the Wikipedia data. Returns two files:
+     *   
+     *   (1) A "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
+     *   (i.e., <# vertices> <# edges>) and data rows of the form 
+     *   <page_id_from> <page_id_to> <link_section> (i.e., there is a link from the article given 
+     *   by page_id_from to the article given by page_id_to in the link_section-th section of page).
+     *   
+     *   (2) An "id map file" (.txt). Each row in this file is of form "<node_id> <page_id>", so
+     *   it can be used to determine the vertex "index" (node_id) of an article with a given 
+     *   Wikipedia page_id.
      * 
      * @param inFile The path of the JSONL file to process. The "full" file can be found at
      * "data/raw/link_annotated_text.jsonl".
-     * @param outFile The path of the .mtx file to write to. This file should be stored in the
+     * @param graphFile The path of the .mtx file to write to. This file should be stored in the
+     * "/data/clean/" directory or a subdirectory thereof.
+     * @param idMapFile The path of the .txt file to write to. This file should be stored in the
      * "/data/clean/" directory or a subdirectory thereof.
      * @return The header row of the output file.
      */
-    public static String parseLinkData(String inFile, String outFile) {
+    public static String parseLinkData(String inFile, String graphFile, String idMapFile) {
         
         try {
             
@@ -126,9 +136,10 @@ public class DataCleaner {
             long inRows  = 0;
             long outRows = 0;            
             
-            // Set up reader / writer. Use a temporary file for initial pass.
+            // Set up reader / writers. Use a temporary file for initial pass of graph file.
             BufferedReader br = new BufferedReader(new FileReader(inFile));
-            BufferedWriter bw = new BufferedWriter(new FileWriter("temp.mtx"));
+            BufferedWriter graphBW = new BufferedWriter(new FileWriter("temp.mtx"));
+            BufferedWriter idMapBW = new BufferedWriter(new FileWriter(idMapFile));
             
             // Initialize TreeSet for tracking page_ids seen and counters.
             Collection<Long> page_ids = new TreeSet<Long>();                        
@@ -152,8 +163,10 @@ public class DataCleaner {
                 
                 // Process new JSON (represents a page).
                 long page_id = (long) jo.get("page_id");               // Get page id.
-                if (page_ids.add(page_id)) {                           // If new page id, increment.
-                    pages_count++;
+                if (page_ids.add(page_id)) {                           // If new page id, add to map
+                    idMapBW.write(pages_count + "\t" + page_id + "\n");// with node_id.                    
+                    idMapBW.flush();
+                    pages_count++;                                     // Increment counter.
                 }
                 JSONArray sections = (JSONArray) jo.get("sections");   // Get list of JSONObjects.
                                                                        // (One for each section.)
@@ -173,18 +186,20 @@ public class DataCleaner {
                         
                         long link_page_id = (long) section_links.get(j); // Get page id of link.
                         if (page_ids.add(link_page_id)) {                // Update if new page.
+                            idMapBW.write(pages_count + "\t" + link_page_id + "\n");
+                            idMapBW.flush();
                             pages_count++;
                         }
                         if (!links_seen.contains(link_page_id)) {        // If new link for page...
                             links_count++;                               // - Increment link count.
                             links_seen.add(link_page_id);                // - Update list seen.
-                            bw.write(page_id + "\t"                      // - Write to file.
+                            graphBW.write(page_id + "\t"                      // - Write to file.
                                     + link_page_id + "\t" 
                                     + i + "\n");  
                         }
                         
                     }
-                    bw.flush();                    
+                    graphBW.flush();
                 
                 }
                 
@@ -192,7 +207,7 @@ public class DataCleaner {
                 line = br.readLine();
                 
             }                                 
-            bw.close();
+            graphBW.close();
             br.close();
 
             // Set header.
@@ -204,10 +219,10 @@ public class DataCleaner {
             
             // Write header to new file and copy temp file contents.            
             br = new BufferedReader(new FileReader("temp.mtx"));
-            bw = new BufferedWriter(new FileWriter(outFile));
+            graphBW = new BufferedWriter(new FileWriter(graphFile));
             
-            bw.write(header + "\n");
-            bw.flush();
+            graphBW.write(header + "\n");
+            graphBW.flush();
             
             line = br.readLine();
             while (line != null) {
@@ -215,11 +230,12 @@ public class DataCleaner {
                 if ((outRows % 10000) == 0) {
                     System.out.println(outRows + " of " + links_count + " rows copied...");
                 }
-                bw.write(line + "\n");
-                bw.flush();
+                graphBW.write(line + "\n");
+                graphBW.flush();
                 line = br.readLine();
             }
-            bw.close();
+            graphBW.close();
+            idMapBW.close();
             br.close();
             
             // Delete temp file.
@@ -242,7 +258,8 @@ public class DataCleaner {
         return null;
         
     }    
-    
+
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Copies the first {@code n} lines of the "full" link file "data/raw/link_annotated_text.jsonl"
@@ -283,48 +300,56 @@ public class DataCleaner {
         
     }
     
+    // ######################### MAIN FUNCTION - USE TO GENERATE DATA FILES ########################
 
     /**
-     * Uncomment the relevant sections to generate files.
-     * 
-     * @param args Unused.
+     * Toggle the relevant sections to generate files.
      */
     public static void main(String[] args) {
         
         long startTime = System.nanoTime();
 
-//        /* CREATE SNIPPET PAGE_IDS FILES OF THE FIRST 1/10/100 LINES OF THE CSV FILE */
-//        getCSVFileSnippet(1);
-//        getCSVFileSnippet(10);
-//        getCSVFileSnippet(100);
-//        System.out.println(
-//                cleanPageCSV("data/raw/page_first_1.csv", "data/clean/page_ids_first_1.csv"));
-//        System.out.println(
-//                cleanPageCSV("data/raw/page_first_10.csv", "data/clean/page_ids_first_10.csv"));
-//        System.out.println(
-//                cleanPageCSV("data/raw/page_first_100.csv", "data/clean/page_ids_first_100.csv"));
-//        
+        /* CREATE SNIPPET PAGE_IDS FILES OF THE FIRST 1/10/100 LINES OF THE CSV FILE */
+        boolean create_snippet_page_ids = false;   // << Toggle to "true" to generate.
+        if (create_snippet_page_ids) {
+            getCSVFileSnippet(1);
+            getCSVFileSnippet(10);
+            getCSVFileSnippet(100);
+            System.out.println(
+                cleanPageCSV("data/raw/page_first_1.csv", "data/clean/page_ids_first_1.csv"));
+            System.out.println(
+                cleanPageCSV("data/raw/page_first_10.csv", "data/clean/page_ids_first_10.csv"));
+            System.out.println(
+                cleanPageCSV("data/raw/page_first_100.csv", "data/clean/page_ids_first_100.csv"));
+        }        
         
         /* CREATE FULL PAGE_IDS FILE (TAKES ~15 SECONDS) */
-//        System.out.println(
-//              cleanPageCSV("data/raw/page.csv", "data/clean/page_ids.csv"));
-       
+        boolean create_full_page_ids = false;   // << Toggle to "true" to generate.
+        if (create_full_page_ids) {
+            System.out.println(
+                    cleanPageCSV("data/raw/page.csv", "data/clean/page_ids.csv"));            
+        }       
         
-        /* CREATE SNIPPET GRAPH FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
-        getLinkFileSnippet(1);
-        getLinkFileSnippet(10);
-        getLinkFileSnippet(100);
-        System.out.println(parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
-                "data/clean/graph_file_first_1.mtx"));
-        System.out.println(parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
-                "data/clean/graph_file_first_10.mtx"));
-        System.out.println(parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
-                                            "data/clean/graph_file_first_100.mtx"));
-
+        /* CREATE SNIPPET GRAPH & MAP FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
+        boolean create_snippet_graph_files = false;   // << Toggle to "true" to generate.
+        if (create_snippet_graph_files) {
+            getLinkFileSnippet(1);
+            getLinkFileSnippet(10);
+            getLinkFileSnippet(100);
+            System.out.println(parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
+                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt"));
+            System.out.println(parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
+                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt"));
+            System.out.println(parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
+                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt"));            
+        }
         
-        /* CREATE FULL GRAPH FILE (TAKES ~15 MIN) */
-//        System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
-//                                              "data/clean/full_graph_file.mtx"));
+        /* CREATE FULL GRAPH & MAP FILES (TAKES ~10 MIN) */
+        boolean create_full_graph_files = false;   // << Toggle to "true" to generate.
+        if (create_full_graph_files) {
+            System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
+                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt"));         
+        }
         
         long endTime   = System.nanoTime();
         long totalTime = endTime - startTime;
