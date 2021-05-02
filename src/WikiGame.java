@@ -43,19 +43,19 @@ public class WikiGame implements IWikiGame {
             // created buffered file reader
             FileReader fr = new FileReader(filePath);
             BufferedReader br = new BufferedReader(fr);
-            
             String line = br.readLine();
             
             while (line != null) {
-            	String[] toks = line.split("\\\\s+");
+            	String[] toks = line.split("\\s+");
 	            
 	            int wikiID = Integer.parseInt(toks[1]);
 	            int nodeID = Integer.parseInt(toks[0]);
 	            
 	            wikiIDtoNodeID.put(wikiID, nodeID);
+	            
 	            line = br.readLine();
             }
-	            
+	        br.close();    
             return wikiIDtoNodeID.size();
     	} catch (IOException e) {
             // print error message
@@ -76,16 +76,24 @@ public class WikiGame implements IWikiGame {
             String line = br.readLine();
             
             while (line != null) {
-            	String[] toks = line.split("\\\\s+");
+            	String[] toks = line.split("\\s+");
 	            
             	String articleName = toks[1];
 	            int wikiID = Integer.parseInt(toks[0]);
-	            int nodeID = wikiIDtoNodeID.get(wikiID);
+	            System.out.println("looking for " + wikiID + " for " + articleName);
+
+	            try {
+	                int nodeID = wikiIDtoNodeID.get(wikiID);
+	                System.out.println("adding " + articleName + " -> " + nodeID);
+	                articleNametoNodeID.put(articleName, nodeID);
+	                line = br.readLine();
+	            } catch (NullPointerException e) {
+	                line = br.readLine();
+	                continue;
+	            }
 	            
-	            articleNametoNodeID.put(articleName, nodeID);
-	            line = br.readLine();
             }
-	            
+	        br.close();    
             return articleNametoNodeID.size();
     	} catch (IOException e) {
             // print error message
@@ -595,6 +603,36 @@ public class WikiGame implements IWikiGame {
         
         // return v
         return v;
+    }
+
+    @Override
+    public Collection<Integer> findPathHops(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathIndegree(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathOutdegree(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathSection(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int countConnectedComponents() {
+        // TODO Auto-generated method stub
+        return 0;
     }
     
     
