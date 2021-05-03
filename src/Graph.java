@@ -79,12 +79,6 @@ public interface Graph
      */
     boolean hasEdge(int v, int w);
 
-//    /**
-//     * Returns Edge between v and w
-//     * Returns null if no edge
-//     */
-//    Edge getEdge(int v, int w);
-
     /**
      * Returns an array containing the indices of the neighbors of v
      * 

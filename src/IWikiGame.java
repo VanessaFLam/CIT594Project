@@ -2,11 +2,12 @@ import java.util.Collection;
 
 public interface IWikiGame {
     
+    // for use in graph algorithms
     public static final int INFINITY = Integer.MAX_VALUE;
     
     /**
      * This takes in a file that has wiki ID to Node ID mappings. 
-     * It will update the instance variable wikiIDtoNodeID.
+     * It will update the instance variable (a Map) wikiIDtoNodeID.
      * 
      * @param filePath - id_map
      * @return number of IDs mapped
@@ -15,7 +16,7 @@ public interface IWikiGame {
     
     /**
      * This takes in a file that has Article Name to Node ID mappings. 
-     * It will update the instance variable articleNametoNodeID.
+     * It will update the instance variable (a Map) articleNametoNodeID.
      * 
      * @param filePath - page_ids
      * @return number of Articles mapped
@@ -27,7 +28,7 @@ public interface IWikiGame {
      * input file should be as follows: the first line contains two numbers
      * the first is the number of nodes in the graph, the second is the 
      * number of edges; each subsequent line represents an edge with the vertices
-     * being the first two numbers and any relavent edge-weights following.
+     * being the first two numbers and any relevant edge-weights following.
      * 
      * @param filePath - graph_file
      * @return (int) the number of entries (nodes) in the dataset (graph)
@@ -41,7 +42,13 @@ public interface IWikiGame {
      * 
      * @param source      - the id of the origin article
      * @param destination - the id of the destination article
-     * @param type 		  - the type of weight used to find the shortest path
+     * @param type 		  - the type of weight used to find the shortest path, for example:
+     * <ul>
+     * <li> "hops" - assuming each link has the same weight
+     * <li> "indegree" - the indegree of the destination article
+     * <li> "outdegree" - the outdegree of the destination article
+     * <li> "section" - how far down the page the link is
+     * </ul>
      * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPath(int source, int destination, String type);
@@ -52,7 +59,7 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return
+     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPathHops(int source, int destination);
     
@@ -64,7 +71,7 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return
+     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPathIndegree(int source, int destination);
     
@@ -76,7 +83,7 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return
+     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPathOutdegree(int source, int destination);
     
@@ -88,17 +95,15 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return
+     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPathSection(int source, int destination);
     
     /**
      * Runs DFS on the graph to count the number of connected components and
      * whether or not Wikipedia is completely connected
-     * @return
+     * @return (int) number of connected components
      */
     int countConnectedComponents();
-        
-
-    
+           
 }
