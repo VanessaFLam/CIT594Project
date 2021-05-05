@@ -6,16 +6,19 @@ public interface IWikiGame {
     public static final int INFINITY = Integer.MAX_VALUE;
     
     /**
-     * This takes in a file that has wiki ID to Node ID mappings. 
+     * This takes in a file that maps graph node IDs to wiki IDs.
+     * Each line of input file is of form "<node_id> <page_id>".
      * It will update the instance variable (a Map) wikiIDtoNodeID.
+     * Also creates a log file.
      * 
-     * @param filePath - id_map
-     * @return number of IDs mapped
+     * @param filePath Path to id_map file
+     * @return Number of IDs mapped
      */
     public int mapWikiIDtoNodeID(String filePath);
     
     /**
      * This takes in a file that has Article Name to Node ID mappings. 
+     * Each line of input file is of form "<page_id \t title". There is also a header row.
      * It will update the instance variable (a Map) articleNametoNodeID.
      * 
      * @param filePath - page_ids
@@ -28,7 +31,8 @@ public interface IWikiGame {
      * input file should be as follows: the first line contains two numbers
      * the first is the number of nodes in the graph, the second is the 
      * number of edges; each subsequent line represents an edge with the vertices
-     * being the first two numbers and any relevant edge-weights following.
+     * being the first two numbers and the section of the article in which the link found
+     * as the third number.
      * 
      * @param filePath - graph_file
      * @return (int) the number of entries (nodes) in the dataset (graph)
