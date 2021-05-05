@@ -4,8 +4,15 @@ public class WikiGameRunner {
     public static void main(String[] args) {
         
         // File paths all in one place.
-        final String id_map_file   = "data/clean/idmap_file_first_10.txt";
-        final String graph_file    = "data/clean/graph_file_first_10.mtx";
+
+//        final String id_map_file   = "data/clean/full_idmap_file.txt";
+//        final String name_map_file = "data/clean/page_ids.csv";
+//        final String graph_file    = "data/clean/full_graph_file.mtx";
+    	
+    	 final String id_map_file   = "data/test/smallest_nodeid_wikiid.txt";
+         final String name_map_file = "data/test/smallest_wikiid_articlename.txt";
+         final String graph_file    = "data/test/smallest_test.mtx";
+
         
         // Toggle for print statements.
         final boolean print_progress = true;
@@ -66,9 +73,22 @@ public class WikiGameRunner {
             endTime   = System.nanoTime();
             elapsedTime = endTime - startTime;
             System.out.println("finished in " + elapsedTime / 1000000000. + " seconds!");
-        }        
+
+        }
         
+        Graph myGraph = wg.g;
+        System.out.println(myGraph);
         
+        //Test Hops
+        System.out.println(wg.findPath(0, 8, "hops"));
+
+        
+        //Test Section
+        System.out.println(wg.findPath(0, 8, "section"));
+        
+        //Test Section
+        System.out.println(wg.findPath(0, 8, "section"));
+
     }
     
     
