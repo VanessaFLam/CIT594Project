@@ -7,7 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.json.simple.JSONObject;
@@ -21,116 +22,88 @@ import org.json.simple.parser.ParseException;
  */
 public class DataCleaner {
 
-    // TODO: Make 3-column file.
-    
+    // =============================================================================
+    // = OUTPUT FILE CREATION
+    // =============================================================================
     
     /**
-     * Takes in a csv file with four columns (page_id, item_id, title, views) and copies just
-     * page_id and title to a new csv file.
+     * Process a csv file with four columns (page_id, item_id, title, views) and builds a Map from
+     * page_id to title.
      * 
-     * @param inFile The path of the csv file to process. The "full" file can be found at
+     * @param filePath The path of the csv file to process. The "full" file can be found at
      * "/data/raw/page.csv".
-     * @param outFile The path of the csv file to write to. This file should be stored in the
-     * "/data/clean/" directory or a subdirectory thereof.
-     * @return The number of rows successfully parsed (not including header).
+     * @return A mapping from page_id to article title.
      */
-    public static long cleanPageCSV(String inFile, String outFile) {
+    public static Map<Long, String> buildWikiIDtoArticleNameMap(String filePath) {
         
         // Set up reader / writer. 
         try {         
-            
-            // Initialize reader, writer, and counter.
-            BufferedReader br = new BufferedReader(new FileReader(inFile));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
-            long counter = 0;
-            
-            // Read each line, remove unneeded fields, write to output file.
+
+            // Initialize reader and Map.
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            Map<Long, String> wikiIDtoArticleName = new HashMap<Long, String>();
+
+            // Read each line, add to map.
             String line;
+            line = br.readLine(); // skip header row
             line = br.readLine();
             while (line != null) {                
-            
-                counter++;
-                String[] split = line.split(",(?=([^\"]|\"[^\"]*\")*$)"); // allow commas in ""s
-                bw.write(split[0] + "\t" + split[2] + "\n");                
+                
+                try {
+                    String[] toks = line.split(",(?=([^\"]|\"[^\"]*\")*$)"); // allow commas in ""s
+                    long wikiID = Long.parseLong(toks[0]);
+                    String articleName = toks[2];
+                    wikiIDtoArticleName.put(wikiID, articleName);
+                    
+                } catch (Exception e) {
+                    System.out.println("Error in buildWikiIDtoArticleNameMap parsing: " + line);
+                }
                 line = br.readLine();
-            
+                
             }
-            
-            // Close and return.
-            bw.close();
-            br.close();
-            return counter;
-            
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-    
-    // ---------------------------------------------------------------------------------------------
-    
-    /**
-     * Copies the first {@code n} lines of the "full" csv file "data/raw/page.csv"
-     * to a file stored in the same directory with the suffix "_first_n" added.
-     * 
-     * @param n The number of lines to include
-     */
-    private static void getCSVFileSnippet(int n) {
-        
-        try {
-            
-            // Set up reader / writer. 
-            BufferedReader br = new BufferedReader(new FileReader("data/raw/page.csv"));
-            BufferedWriter bw = new BufferedWriter(
-                                          new FileWriter("data/raw/page" + "_first_" + n + ".csv"));
-            
-            // Read / write first n lines to new file.
-            String line;
-            line = br.readLine();
-            while (n > 0) {
-                bw.write(line + "\n");
-                n--;
-                bw.flush();
-                line = br.readLine();
-            }
-            
-            // Close reader / writer.
-            bw.close();
-            br.close();
-        
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+            // Close and return.
+            br.close();
+            return wikiIDtoArticleName;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        return null; // return null on failure
+    
     }
-    
-    // ---------------------------------------------------------------------------------------------
-    
+        
+    // ---------------------------------------------------------------------------------------------    
+        
     /**
      * Parses a JSONL file of links as given by the Wikipedia data. Returns two files:
      *   
      *   (1) A "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
      *   (i.e., <# vertices> <# edges>) and data rows of the form 
-     *   <page_id_from> <page_id_to> <link_section> (i.e., there is a link from the article given 
-     *   by page_id_from to the article given by page_id_to in the link_section-th section of page).
+     *   <wiki_id_from> <wiki_id_to> <link_section> (i.e., there is a link from the article given 
+     *   by wiki_id_from to the article given by wiki_id_to in the link_section-th section of 
+     *   the former).
      *   
-     *   (2) An "id map file" (.txt). Each row in this file is of form "<node_id> <page_id>", so
-     *   it can be used to determine the vertex "index" (node_id) of an article with a given 
-     *   Wikipedia page_id.
+     *   (2) An "id map file" (.txt). Each row in this file is of form 
+     *   "<node_id> <page_id> <article_title>", so it can be used to translate between these forms
+     *   of identifying an article.
      * 
      * @param inFile The path of the JSONL file to process. The "full" file can be found at
      * "data/raw/link_annotated_text.jsonl".
+     * @param wikiIDtoArticleNameMap A mapping built by buildWikiIDtoArticleNameMap.
      * @param graphFile The path of the .mtx file to write to. This file should be stored in the
      * "/data/clean/" directory or a subdirectory thereof.
      * @param idMapFile The path of the .txt file to write to. This file should be stored in the
      * "/data/clean/" directory or a subdirectory thereof.
      * @return The header row of the output file.
      */
-    public static String parseLinkData(String inFile, String graphFile, String idMapFile) {
+    public static String parseLinkData(String inFile, Map<Long, String> wikiIDtoArticleNameMap,
+                                        String graphFile, String idMapFile) {
+        
+        final String logPath = "data/logs/data_cleaner_error_log.txt";
         
         try {
             
@@ -139,9 +112,11 @@ public class DataCleaner {
             long outRows = 0;            
             
             // Set up reader / writers. Use a temporary file for initial pass of graph file.
-            BufferedReader br = new BufferedReader(new FileReader(inFile));
-            BufferedWriter graphBW = new BufferedWriter(new FileWriter("temp.mtx"));
-            BufferedWriter idMapBW = new BufferedWriter(new FileWriter(idMapFile));
+            BufferedReader graphBR = new BufferedReader(new FileReader(inFile));
+            BufferedWriter graphBW = new BufferedWriter(new FileWriter("temp_graph.mtx"));
+            BufferedReader idMapBR;
+            BufferedWriter idMapBW = new BufferedWriter(new FileWriter("temp_idmap.txt"));
+            BufferedWriter logBW   = new BufferedWriter(new FileWriter(logPath));
             
             // Initialize TreeSet for tracking page_ids seen and counters.
             Collection<Long> page_ids = new TreeSet<Long>();                        
@@ -150,7 +125,7 @@ public class DataCleaner {
         
             // Read file line-by-line to create temp file.
             String line;
-            line = br.readLine();
+            line = graphBR.readLine();
             while (line != null) {
                 
                 // Logging.
@@ -164,12 +139,28 @@ public class DataCleaner {
                 JSONObject jo = (JSONObject) obj;                      // Cast to JSONObject.
                 
                 // Process new JSON (represents a page).
-                long page_id = (long) jo.get("page_id");               // Get page id.
-                if (page_ids.add(page_id)) {                           // If new page id, add to map
-                    idMapBW.write(pages_count + "\t" + page_id + "\n");// with node_id.                    
-                    idMapBW.flush();
-                    pages_count++;                                     // Increment counter.
+                long wiki_id = (long) jo.get("page_id");               // Get wiki id of source.
+
+                if (page_ids.add(wiki_id)) {                           // If new, add to set.
+
+                    String articleName = wikiIDtoArticleNameMap.get(wiki_id); // Get article name.
+
+                    if (articleName != null) {                         // Add to id map file if can.
+
+                        idMapBW.write(pages_count + "\t"
+                                        + wiki_id + "\t"
+                                        + articleName + "\n");     
+                        idMapBW.flush();
+                        pages_count++;                                 // Increment counter.
+                        
+                    } else {                                           // Otherwise log error.
+                        
+                        logBW.write("Failed to match wikiID: " + wiki_id + "\n");
+                        
+                    }
+                                        
                 }
+                
                 JSONArray sections = (JSONArray) jo.get("sections");   // Get list of JSONObjects.
                                                                        // (One for each section.)
                 TreeSet<Long> links_seen = new TreeSet<Long>();        // To avoid duplicates.
@@ -186,17 +177,32 @@ public class DataCleaner {
                     int num_section_links = section_links.size();
                     for (int j = 0; j < num_section_links; j++) {
                         
-                        long link_page_id = (long) section_links.get(j); // Get page id of link.
-                        if (page_ids.add(link_page_id)) {                // Update if new page.
-                            idMapBW.write(pages_count + "\t" + link_page_id + "\n");
-                            idMapBW.flush();
-                            pages_count++;
+                        long link_wiki_id = (long) section_links.get(j); // Get page id of link.
+                        if (page_ids.add(link_wiki_id)) {                // If new, add to set.
+
+                            // Get article name.
+                            String articleName = wikiIDtoArticleNameMap.get(link_wiki_id);
+
+                            if (articleName != null) {                   // Add to id map file.
+
+                                idMapBW.write(pages_count + "\t"
+                                        + link_wiki_id + "\t"
+                                        + articleName + "\n");     
+                                idMapBW.flush();
+                                pages_count++;                           // Increment counter.
+
+                            } else {                                     // Otherwise log error.
+
+                                logBW.write("Failed to match wikiID: " + link_wiki_id + "\n");
+
+                            }
+
                         }
-                        if (!links_seen.contains(link_page_id)) {        // If new link for page...
+                        if (!links_seen.contains(link_wiki_id)) {        // If new link for page...
                             links_count++;                               // - Increment link count.
-                            links_seen.add(link_page_id);                // - Update list seen.
-                            graphBW.write(page_id + "\t"                      // - Write to file.
-                                    + link_page_id + "\t" 
+                            links_seen.add(link_wiki_id);                // - Update list seen.
+                            graphBW.write(wiki_id + "\t"                      // - Write to file.
+                                    + link_wiki_id + "\t" 
                                     + i + "\n");  
                         }
                         
@@ -206,11 +212,12 @@ public class DataCleaner {
                 }
                 
                 // Get next line.
-                line = br.readLine();
+                line = graphBR.readLine();
                 
             }                                 
             graphBW.close();
-            br.close();
+            graphBR.close();
+            idMapBW.close();
 
             // Set header.
             String header = pages_count + "\t" + links_count;
@@ -218,15 +225,27 @@ public class DataCleaner {
             // Logging.
             System.out.println("Initial processing complete. " + inRows + " processed.");
             System.out.println("Header: " + header);
+            System.out.println("Number of nodes: " + pages_count);
             
-            // Write header to new file and copy temp file contents.            
-            br = new BufferedReader(new FileReader("temp.mtx"));
+            // Write headers to new files and copy temp file contents.            
+            graphBR = new BufferedReader(new FileReader("temp_graph.mtx"));
             graphBW = new BufferedWriter(new FileWriter(graphFile));
+            idMapBR = new BufferedReader(new FileReader("temp_idmap.txt"));
+            idMapBW = new BufferedWriter(new FileWriter(idMapFile));
             
             graphBW.write(header + "\n");
             graphBW.flush();
+            idMapBW.write(pages_count + "\n");
+            idMapBW.flush();
             
-            line = br.readLine();
+            line = idMapBR.readLine();
+            while (line != null) {
+                idMapBW.write(line + "\n");
+                idMapBW.flush();
+                line = idMapBR.readLine();
+            }
+             
+            line = graphBR.readLine();
             while (line != null) {
                 outRows++;
                 if ((outRows % 10000) == 0) {
@@ -234,14 +253,18 @@ public class DataCleaner {
                 }
                 graphBW.write(line + "\n");
                 graphBW.flush();
-                line = br.readLine();
+                line = graphBR.readLine();
             }
             graphBW.close();
             idMapBW.close();
-            br.close();
+            graphBR.close();
+            idMapBR.close();
+            logBW.close();
             
-            // Delete temp file.
-            File temp = new File("temp.mtx");
+            // Delete temp files
+            File temp = new File("temp_graph.mtx");
+            temp.delete();
+            temp = new File("temp_idmap.txt");
             temp.delete();
             
             // Logging.
@@ -260,6 +283,47 @@ public class DataCleaner {
         return null;
         
     }    
+
+    // =============================================================================
+    // = FILE SNIPPET CREATION
+    // =============================================================================
+    
+    /**
+     * Copies the first {@code n} lines of the "full" csv file "data/raw/page.csv"
+     * to a file stored in the same directory with the suffix "_first_n" added.
+     * 
+     * @param n The number of lines to include
+     */
+    private static void getCSVFileSnippet(int n) {
+        
+        try {
+            
+            // Set up reader / writer. 
+            BufferedReader br = new BufferedReader(new FileReader("data/raw/page.csv"));
+            BufferedWriter bw = new BufferedWriter(
+                    new FileWriter("data/raw/page" + "_first_" + n + ".csv"));
+            
+            // Read / write first n lines to new file.
+            String line;
+            line = br.readLine();
+            while (n > 0) {
+                bw.write(line + "\n");
+                n--;
+                bw.flush();
+                line = br.readLine();
+            }
+            
+            // Close reader / writer.
+            bw.close();
+            br.close();
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -302,57 +366,42 @@ public class DataCleaner {
         
     }
     
-    // ######################### MAIN FUNCTION - USE TO GENERATE DATA FILES ########################
-
+    // #############################################################################
+    // = MAIN FUNCTION - USE TO GENERATE DATA FILES
+    // #############################################################################
+    
     /**
      * Toggle the relevant sections to generate files.
      */
     public static void main(String[] args) {
         
         long startTime = System.nanoTime();
-
-        /* CREATE SNIPPET PAGE_IDS FILES OF THE FIRST 1/10/100 LINES OF THE CSV FILE */
-        boolean create_snippet_page_ids = false;   // << Toggle to "true" to generate.
-        if (create_snippet_page_ids) {
-            getCSVFileSnippet(1);
-            getCSVFileSnippet(10);
-            getCSVFileSnippet(100);
-            System.out.println(
-                cleanPageCSV("data/raw/page_first_1.csv", "data/clean/page_ids_first_1.csv"));
-            System.out.println(
-                cleanPageCSV("data/raw/page_first_10.csv", "data/clean/page_ids_first_10.csv"));
-            System.out.println(
-                cleanPageCSV("data/raw/page_first_100.csv", "data/clean/page_ids_first_100.csv"));
-        }        
         
-        /* CREATE FULL PAGE_IDS FILE (TAKES ~15 SECONDS) */
-        boolean create_full_page_ids = false;   // << Toggle to "true" to generate.
-        if (create_full_page_ids) {
-            System.out.println(
-                    cleanPageCSV("data/raw/page.csv", "data/clean/page_ids.csv"));            
-        }       
-        
+        /* BUILD WIKI ID TO ARTICLE NAME MAP (~30 seconds) */
+        Map<Long, String> wikiIDtoArticleNameMap = 
+                buildWikiIDtoArticleNameMap("data/raw/page.csv");
+            
         /* CREATE SNIPPET GRAPH & MAP FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
-        boolean create_snippet_graph_files = false;   // << Toggle to "true" to generate.
+        boolean create_snippet_graph_files = true;   // << Toggle to "true" to generate.
         if (create_snippet_graph_files) {
             getLinkFileSnippet(1);
             getLinkFileSnippet(10);
             getLinkFileSnippet(100);
-            parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
-                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
-            parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
+//            parseLinkData("data/raw/link_annotated_text_first_1.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
+            parseLinkData("data/raw/link_annotated_text_first_10.jsonl", wikiIDtoArticleNameMap,
                     "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt");
-            parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
-                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
+//            parseLinkData("data/raw/link_annotated_text_first_100.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
         }
-        
-        /* CREATE FULL GRAPH & MAP FILES (TAKES ~10 MIN) */
-        boolean create_full_graph_files = false;   // << Toggle to "true" to generate.
-        if (create_full_graph_files) {
-            System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
-                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt"));         
-        }
-        
+//        
+//        /* CREATE FULL GRAPH & MAP FILES (TAKES ~10 MIN) */
+//        boolean create_full_graph_files = false;   // << Toggle to "true" to generate.
+//        if (create_full_graph_files) {
+//            System.out.println(parseLinkData("data/raw/link_annotated_text.jsonl",
+//                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt"));         
+//        }
+//        
         long endTime   = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println("Time to run: " + totalTime / 1000000000. + " seconds");
