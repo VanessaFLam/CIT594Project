@@ -1,4 +1,5 @@
 /bin/
+/data/logs/
 /data/raw/
 /data/clean/
 temp.mtx
