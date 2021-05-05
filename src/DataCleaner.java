@@ -21,6 +21,8 @@ import org.json.simple.parser.ParseException;
  */
 public class DataCleaner {
 
+    // TODO: Make 3-column file.
+    
     
     /**
      * Takes in a csv file with four columns (page_id, item_id, title, views) and copies just
@@ -336,12 +338,12 @@ public class DataCleaner {
             getLinkFileSnippet(1);
             getLinkFileSnippet(10);
             getLinkFileSnippet(100);
-            System.out.println(parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
-                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt"));
-            System.out.println(parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
-                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt"));
-            System.out.println(parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
-                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt"));            
+            parseLinkData("data/raw/link_annotated_text_first_1.jsonl",
+                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
+            parseLinkData("data/raw/link_annotated_text_first_10.jsonl",
+                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt");
+            parseLinkData("data/raw/link_annotated_text_first_100.jsonl",
+                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
         }
         
         /* CREATE FULL GRAPH & MAP FILES (TAKES ~10 MIN) */

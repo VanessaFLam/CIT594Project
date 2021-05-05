@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,16 +15,208 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 public class WikiGame implements IWikiGame {
-	// =============================================================================
-	// = INSTANCE VARIABLES
-	// =============================================================================
+    // =============================================================================
+    // = INSTANCE VARIABLES
+    // =============================================================================
 
-	Graph g;
-	int numOfNodes;
-	Map<Integer, Integer> wikiIDtoNodeID;
-	Map<String, Integer> articleNametoNodeID;
+    Graph g;
+    int numOfNodes;
+    Map<Integer, Integer> wikiIDtoNodeID;
+    Map<String, Integer> articleNametoNodeID;
+    
+    public static final Integer DefualtEdgeWeight = 1;
+    
+    // =============================================================================
+    // = CONSTRUCTOR
+    // =============================================================================
+    public WikiGame() {
+        g = new GraphL();
+        numOfNodes = 0;
+        wikiIDtoNodeID = new HashMap<Integer, Integer>();
+        articleNametoNodeID = new HashMap<String, Integer>();
+    }
 
-	public static final Integer DefualtEdgeWeight = 1;
+    // =============================================================================
+    // = METHODS
+    // =============================================================================
+    
+    public int mapWikiIDtoNodeID(String filePath) {
+        
+        final String logPath = "data/logs/map_ids_error_log.txt";
+        
+    	try {
+        
+    	    // Create reader.
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            
+            // Create writer (for log file).
+            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
+
+            // Read each line in the file - each line is of form "<node_id> <page_id>".
+            // Add mapping to file if successful, log error if not.
+            String line = br.readLine();
+            while (line != null) {
+                
+                try {
+                    String[] toks = line.split("\\s+");	            
+                    int wikiID = Integer.parseInt(toks[1]);
+                    int nodeID = Integer.parseInt(toks[0]);	            
+                    wikiIDtoNodeID.put(wikiID, nodeID);                    
+                } catch (Exception e) {
+                    bw.write("File parse error - line: " + line + "\n");
+                }	            
+	            line = br.readLine();
+            
+            }
+	        
+            // Close reader/writer.
+            br.close();
+            bw.close();
+            
+            // Return value is size of hashmap = number of mappings.
+            return wikiIDtoNodeID.size();
+                
+    	} catch (IOException e) {
+    	    e.printStackTrace();
+    	    return -1;        	
+    	}
+    
+    }
+    
+    public int mapArticleNametoNodeID(String filePath) {
+
+        final String logPath = "data/logs/map_names_error_log.txt";
+
+        try {
+
+            // Create reader.
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+
+            // Create writer (for log file).
+            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
+
+            // Read each line in the file - each line is of form "<page_id> <title>".
+            // Add mapping to file if successful, log error if not.
+            String line = br.readLine(); // skip header
+            line = br.readLine();
+            while (line != null) {
+
+                try {
+                    // Get wiki_id and name.
+                    String[] toks = line.split("\\s+");             
+                    int page_id = Integer.parseInt(toks[0]);
+                    String article_name = toks[1];             
+                    // Use wiki_id to get node_id from wikiIDtoNodeID map, then add.
+                    articleNametoNodeID.put(article_name, wikiIDtoNodeID.get(page_id));
+                } catch (Exception e) {
+                    bw.write("File parse error - line: " + line + "\n");
+                    bw.write("Error type: " + e.getClass() + "\n");
+                }
+                
+                line = br.readLine();
+
+            }
+
+            // Close reader/writer.
+            br.close();
+            bw.close();
+
+            // Return value is size of hashmap = number of mappings.
+            return articleNametoNodeID.size();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;          
+        }
+        
+    }            
+    
+    @Override
+    public int loadGraphFromDataSet(String filePath) {
+             
+        final String logPath = "data/logs/load_graph_error_log.txt";
+        final boolean print_progress = true;
+        
+        try {
+            
+            // Create reader.
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            
+            // Create writer (for log file).
+            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
+
+            // Get number of nodes from header and use to initialize graph.
+
+            String line = br.readLine();
+            String[] toks = line.split("\\s+");
+            g.init(Integer.parseInt(toks[0]));
+            
+            // Get number of edges for tracking progress.
+            int total_edges = Integer.parseInt(toks[1]);
+            int edges_processed = 0;
+            
+            // Read remaining lines and process as edges.
+            line = br.readLine();
+            while (line != null) {
+
+                // Split into tokens and parse values.
+                toks = line.split("\\s+");
+                System.out.println(Arrays.toString(toks));
+
+                try {
+
+                    // Get nodes.
+                    int source_node_id = wikiIDtoNodeID.get(Integer.parseInt(toks[0]));
+                    int dest_node_id   = wikiIDtoNodeID.get(Integer.parseInt(toks[1]));
+                    INode sourceNode = (INode) g.getNode(source_node_id);
+                    INode destNode   = (INode) g.getNode(dest_node_id);
+                    
+                    // Add edge to graph with weight.
+                    int edge_wght   = Integer.parseInt(toks[2]);
+                    g.addEdge(source_node_id, dest_node_id, edge_wght);
+                    
+                    // Update nodes.
+                    
+                    
+                    
+                    sourceNode.incrementOutdegree();
+                    destNode.incrementIndegree();
+                    edges_processed++;
+//                    if (print_progress && ((edges_processed % 10000) == 0)) {
+                    if (print_progress) {
+                        double pct = (float) edges_processed / (float) total_edges;
+                        System.out.println("\t\t" + edges_processed + " of " + total_edges
+                                + " processed (" + pct + "%)...");
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("File parse error - line: " + line);
+                    System.out.println("Error type: " + e.getClass());
+                    bw.write("File parse error - line: " + line + "\n");
+                    bw.write("Error type: " + e.getClass() + "\n");
+                }
+
+                // Go to next line.
+                line = br.readLine();
+
+            }
+            
+            // Close reader/writer.
+            br.close();
+            bw.close();
+            
+            // Return number of nodes.
+            return g.nodeCount();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1; 
+        }
+        
+    }
+
+  public static final Integer DefualtEdgeWeight = 1;
 
 	// =============================================================================
 	// = CONSTRUCTOR
@@ -381,7 +576,6 @@ public class WikiGame implements IWikiGame {
         return pathNodes;
     }
 
-
 	// =============================================================================
 	// = HELPER METHODS
 	// =============================================================================
@@ -431,5 +625,6 @@ public class WikiGame implements IWikiGame {
 		}
 		return weight;
 	}
+
 
 }
