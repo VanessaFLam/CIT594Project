@@ -322,11 +322,11 @@ public class WikiGame implements IWikiGame {
 	   public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
 	
 	       // find the difference in the indegree for each node
-	       int shortestDiff = o1.getKey() - o2.getKey();
+	       int shortestDiff = o2.getKey() - o1.getKey();
 	
 	       // if they have the same indegree, sort by article id
 	       if (shortestDiff == 0) {
-	           return o1.getValue() - o2.getValue();
+	           return o2.getValue() - o1.getValue();
 	       }
 	       
 	       // otherwise return the difference of the indegrees

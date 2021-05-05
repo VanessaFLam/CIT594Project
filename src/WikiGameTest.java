@@ -16,14 +16,11 @@ public class WikiGameTest {
 
 	@Test
 	public void testHopsSmallest() {
-		final String id_map_file   = "data/test/smallest_nodeid_wikiid.txt";
-        final String name_map_file = "data/test/smallest_wikiid_articlename.txt";
-        final String graph_file    = "data/test/smallest_test.mtx";
+   	 final String id_map_file   = "data/test/smallest_map.txt";
+   	 final String graph_file    = "data/test/smallest_test.mtx";
         
         WikiGame wg = new WikiGame();
-        wg.mapWikiIDtoNodeID(id_map_file);
-        wg.mapArticleNametoNodeID(name_map_file);
-        wg.loadGraphFromDataSet(graph_file);
+        wg.loadGraph(id_map_file, graph_file);
         
         List<Integer> ans = new LinkedList<Integer>();
         ans.add(0);
@@ -34,14 +31,11 @@ public class WikiGameTest {
 	
 	@Test
 	public void testSectionSmallest() {
-		final String id_map_file   = "data/test/smallest_nodeid_wikiid.txt";
-        final String name_map_file = "data/test/smallest_wikiid_articlename.txt";
-        final String graph_file    = "data/test/smallest_test.mtx";
+		final String id_map_file   = "data/test/smallest_map.txt";
+	   	final String graph_file    = "data/test/smallest_test.mtx";
         
         WikiGame wg = new WikiGame();
-        wg.mapWikiIDtoNodeID(id_map_file);
-        wg.mapArticleNametoNodeID(name_map_file);
-        wg.loadGraphFromDataSet(graph_file);
+        wg.loadGraph(id_map_file, graph_file);
         
         List<Integer> ans = new LinkedList<Integer>();
         ans.add(0);
@@ -49,6 +43,24 @@ public class WikiGameTest {
         ans.add(6);
         ans.add(8);
         assertEquals(ans, wg.findPath(0, 8, "section"));
+	}
+	
+	@Test
+	public void testIndegreeSmallest() {
+		final String id_map_file   = "data/test/smallest_map.txt";
+	   	 final String graph_file    = "data/test/smallest_test.mtx";
+        
+        WikiGame wg = new WikiGame();
+        wg.loadGraph(id_map_file, graph_file);
+        
+        List<Integer> ans = new LinkedList<Integer>();
+//        ans.add(0);
+//        ans.add(2);
+//        ans.add(6);
+//        ans.add(8);
+        
+        //NEED TO FIX.
+        System.out.println(wg.findPath(0, 8, "indegree"));
 	}
 
 }
