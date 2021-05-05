@@ -23,7 +23,7 @@ public class WikiGame implements IWikiGame {
     public static final Integer DefualtEdgeWeight = 1;
     
     // =============================================================================
-    // = Constructor
+    // = CONSTRUCTOR
     // =============================================================================
     public WikiGame() {
         g = new GraphL();
@@ -32,12 +32,12 @@ public class WikiGame implements IWikiGame {
     }
 
     // =============================================================================
-    // = Methods
+    // = METHODS
     // =============================================================================
     
     
     
-    //TODO: Method to create the hashmap
+    //TODO: Method to create the hashmap -Jackson
     public int mapWikiIDtoNodeID(String filePath) {
     	try {
             // created buffered file reader
@@ -64,6 +64,7 @@ public class WikiGame implements IWikiGame {
         return -1;    
     }
     
+    //Jackson
     public int mapArticleNametoNodeID(String filePath) {
     	try {
             // created buffered file reader
@@ -102,6 +103,7 @@ public class WikiGame implements IWikiGame {
         return -1;   
     }
     
+    //Jackson
     @Override
     public int loadGraphFromDataSet(String filePath) {
         
@@ -134,6 +136,7 @@ public class WikiGame implements IWikiGame {
                 // TODO: should we validate data - i.e. check that parseInt is successful?
                 g.addEdge(Integer.parseInt(toks[0]), Integer.parseInt(toks[1]), DefualtEdgeWeight);
                 g.addEdge(Integer.parseInt(toks[0]), Integer.parseInt(toks[1]), Integer.parseInt(toks[2]));
+                //update indegrees and outdegrees
                 
                 // get next line
                 line = br.readLine();
@@ -225,6 +228,39 @@ public class WikiGame implements IWikiGame {
         return pathNodes;
 
     }
+    
+    @Override
+    public Collection<Integer> findPathHops(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathIndegree(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathOutdegree(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> findPathSection(int source, int destination) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int countConnectedComponents() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    
+    //general dijkstras
+    
     
 //    public Collection<Integer> shortestPathIndegree(int source, int destination){
 //        
@@ -577,7 +613,7 @@ public class WikiGame implements IWikiGame {
     }
     
     // =============================================================================
-    // = Helper Methods
+    // = HELPER METHODS
     // =============================================================================
     
     // find the unvisited vertex with the minimum "shortest"
@@ -604,36 +640,39 @@ public class WikiGame implements IWikiGame {
         // return v
         return v;
     }
+    
+    
+    /**
+     * Dijkstra Helper
+     */
+    
+    static void DijkstraPQ(Graph G, int s, int[] D) {
+    	  int v;                                 // The current vertex
+    	  KVPair[] E = new KVPair[G.edgeCount()];        // Heap for edges
+    	  E[0] = new KVPair(0, s);               // Initial vertex
+    	  MinHeap H = new MinHeap(E, 1, G.edgeCount());
+    	  for (int i=0; i<G.nodeCount(); i++)            // Initialize distance
+    	    D[i] = INFINITY;
+    	  D[s] = 0;
+    	  for (int i=0; i<G.nodeCount(); i++) {          // For each vertex
+    	    do { KVPair temp = (KVPair)(H.removemin());
+    	         if (temp == null) return;       // Unreachable nodes exist
+    	         v = (Integer)temp.value(); } // Get position
+    	      while (G.getNode(v) == VISITED);
+    	    G.setValue(v, VISITED);
+    	    if (D[v] == INFINITY) return;        // Unreachable
+    	    int[] nList = G.neighbors(v);
+    	    for (int j=0; j<nList.length; j++) {
+    	      int w = nList[j];
+    	      if (D[w] > (D[v] + G.weight(v, w))) { // Update D
+    	        D[w] = D[v] + G.weight(v, w);
+    	        H.insert(new KVPair(D[w], w));
+    	      }
+    	    }
+    	  }
+    	}
 
-    @Override
-    public Collection<Integer> findPathHops(int source, int destination) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-    @Override
-    public Collection<Integer> findPathIndegree(int source, int destination) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<Integer> findPathOutdegree(int source, int destination) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<Integer> findPathSection(int source, int destination) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int countConnectedComponents() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
     
     
 
