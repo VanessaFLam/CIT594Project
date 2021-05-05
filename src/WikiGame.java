@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 public class WikiGame implements IWikiGame {
+    
     // =============================================================================
     // = INSTANCE VARIABLES
     // =============================================================================
@@ -42,14 +43,80 @@ public class WikiGame implements IWikiGame {
     // = METHODS
     // =============================================================================
     
-//    public void loadGraph(String id_map_file, String graph_file) {
-//        
-//        loadNodes(id_map_file);
-//        loadEdges(graph_file);
-//        
-//    }
+    @Override
+    public void loadGraph(String id_map_file, String graph_file) {
+        
+        loadNodes(id_map_file);
+        loadEdges(graph_file);
+        
+    }    
     
+    public String loadNodes(String filePath) {
+        
+        final String logPath = "data/logs/load_nodes_error_log.txt";
+        
+        try {
+        
+            // Create reader.
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            
+            // Create writer (for log file).
+            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
     
+            // Header tells number of nodes. Use this to call g.init.
+            String line = br.readLine();
+            numOfNodes = Integer.parseInt(line);
+            g.init(numOfNodes);
+            
+            // Read each line in the file.
+            // Each line is of form "<node_id> <page_id> <article_title>".
+            while ((line = br.readLine()) != null) {
+                
+                // Try to parse to "<node_id> <page_id> <article_title>". Log error if not.
+                try {
+                    
+                    // Get tokens.
+                    String[] toks = line.split("\\s+");         
+                    int nodeID = Integer.parseInt(toks[0]);
+                    int wikiID = Integer.parseInt(toks[1]);
+                    String articleName = toks[2];
+                    
+                    // Initialize node in graph.
+                    INode n = new Node(nodeID, wikiID, articleName);
+                    g.setNode(nodeID, n);                    
+                    
+                    // Add to maps.
+                    wikiIDtoNodeID.put(wikiID, nodeID);
+                    if (!articleNametoNodeIDs.containsKey(articleName)) {
+                        articleNametoNodeIDs.put(articleName, new ArrayList<Integer>());
+                    } else {
+                        articleNametoNodeIDs.get(articleName).add(nodeID);
+                    }
+                
+                } catch (Exception e) {
+                
+                    bw.write("File parse error: " + line + "\n");
+                
+                }               
+            
+            }
+            
+            // Close reader/writer.
+            br.close();
+            bw.close();
+            
+            // Return summary of key values in string.
+            String result = numOfNodes + " " + wikiIDtoNodeID.size() 
+                                                        + " " + articleNametoNodeIDs.size();
+            return result;
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;          
+        }
+        
+    }
+
     public int loadEdges(String filePath) {
         
         final String logPath = "data/logs/load_edges_error_log.txt";
@@ -107,203 +174,7 @@ public class WikiGame implements IWikiGame {
         }        
         
     }    
-    
-    // form is "<node_id> <page_id> <article_title>" will get n from other file
-    public String loadNodes(String filePath) {
-        
-        final String logPath = "data/logs/load_nodes_error_log.txt";
-        
-        try {
-        
-            // Create reader.
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
-            
-            // Create writer (for log file).
-            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
-
-            // Header tells number of nodes. Use this to call g.init.
-            String line = br.readLine();
-            numOfNodes = Integer.parseInt(line);
-            g.init(numOfNodes);
-            
-            // Read each line in the file.
-            // Each line is of form "<node_id> <page_id> <article_title>".
-            while ((line = br.readLine()) != null) {
-                
-                // Try to parse to "<node_id> <page_id> <article_title>". Log error if not.
-                try {
-                    
-                    // Get tokens.
-                    String[] toks = line.split("\\s+");         
-                    int nodeID = Integer.parseInt(toks[0]);
-                    int wikiID = Integer.parseInt(toks[1]);
-                    String articleName = toks[2];
-                    
-                    // Initialize node in graph.
-                    INode n = new Node(nodeID, wikiID, articleName);
-                    g.setNode(nodeID, n);                    
-                    
-                    // Add to maps.
-                    wikiIDtoNodeID.put(wikiID, nodeID);
-                    if (!articleNametoNodeIDs.containsKey(articleName)) {
-                        articleNametoNodeIDs.put(articleName, new ArrayList<Integer>());
-                    } else {
-                        articleNametoNodeIDs.get(articleName).add(nodeID);
-                    }
-                
-                } catch (Exception e) {
-                
-                    bw.write("File parse error: " + line + "\n");
-                
-                }               
-            
-            }
-            
-            // Close reader/writer.
-            br.close();
-            bw.close();
-            
-            // Return summary of key values in string.
-            String result = numOfNodes + " " + wikiIDtoNodeID.size() 
-                                                        + " " + articleNametoNodeIDs.size();
-            return result;
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;          
-        }
-        
-    }
-    
-    
-    public int mapWikiIDtoNodeID(String filePath) {
-        
-        final String logPath = "data/logs/map_ids_error_log.txt";
-        
-    	try {
-        
-    	    // Create reader.
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
-            
-            // Create writer (for log file).
-            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
-
-            // Read each line in the file - each line is of form "<node_id> <page_id>".
-            // Add mapping to file if successful, log error if not.
-            String line = br.readLine();
-            while (line != null) {
-                
-                try {
-                    String[] toks = line.split("\\s+");	            
-                    int wikiID = Integer.parseInt(toks[1]);
-                    int nodeID = Integer.parseInt(toks[0]);	            
-                    wikiIDtoNodeID.put(wikiID, nodeID);                    
-                } catch (Exception e) {
-                    bw.write("File parse error - line: " + line + "\n");
-                }	            
-	            line = br.readLine();
-            
-            }
-	        
-            // Close reader/writer.
-            br.close();
-            bw.close();
-            
-            // Return value is size of hashmap = number of mappings.
-            return wikiIDtoNodeID.size();
-                
-    	} catch (IOException e) {
-    	    e.printStackTrace();
-    	    return -1;        	
-    	}
-    
-    }         
-    
-    @Override
-    public int loadGraphFromDataSet(String filePath) {
-             
-        final String logPath = "data/logs/load_graph_error_log.txt";
-        final boolean print_progress = true;
-        
-        try {
-            
-            // Create reader.
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
-            
-            // Create writer (for log file).
-            BufferedWriter bw = new BufferedWriter(new FileWriter(logPath));
-
-            // Get number of nodes from header and use to initialize graph.
-
-            String line = br.readLine();
-            String[] toks = line.split("\\s+");
-            g.init(Integer.parseInt(toks[0]));
-            
-            // Get number of edges for tracking progress.
-            int total_edges = Integer.parseInt(toks[1]);
-            int edges_processed = 0;
-            
-            // Read remaining lines and process as edges.
-            line = br.readLine();
-            while (line != null) {
-
-                // Split into tokens and parse values.
-                toks = line.split("\\s+");
-                System.out.println(Arrays.toString(toks));
-
-                try {
-
-                    // Get nodes.
-                    int source_node_id = wikiIDtoNodeID.get(Integer.parseInt(toks[0]));
-                    int dest_node_id   = wikiIDtoNodeID.get(Integer.parseInt(toks[1]));
-//                    INode sourceNode = (INode) g.getNode(source_node_id);
-//                    INode destNode   = (INode) g.getNode(dest_node_id);
-                    
-                    // Add edge to graph with weight.
-                    int edge_wght   = Integer.parseInt(toks[2]);
-                    g.addEdge(source_node_id, dest_node_id, edge_wght);
-                    
-                    // Update nodes.
-                    
-                    
-                    
-//                    sourceNode.incrementOutdegree();
-//                    destNode.incrementIndegree();
-                    edges_processed++;
-//                    if (print_progress && ((edges_processed % 10000) == 0)) {
-                    if (print_progress) {
-                        double pct = (float) edges_processed / (float) total_edges;
-                        System.out.println("\t\t" + edges_processed + " of " + total_edges
-                                + " processed (" + pct + "%)...");
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("File parse error - line: " + line);
-                    System.out.println("Error type: " + e.getClass());
-                    bw.write("File parse error - line: " + line + "\n");
-                    bw.write("Error type: " + e.getClass() + "\n");
-                }
-
-                // Go to next line.
-                line = br.readLine();
-
-            }
-            
-            // Close reader/writer.
-            br.close();
-            bw.close();
-            
-            // Return number of nodes.
-            numOfNodes = g.nodeCount();
-            return g.nodeCount();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -1; 
-        }
-        
-    }
+       
 
 	@Override
 	public Collection<Integer> findPath(int source, int destination, String param) {

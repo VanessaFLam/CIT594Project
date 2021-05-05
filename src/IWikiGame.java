@@ -3,41 +3,25 @@ import java.util.Collection;
 public interface IWikiGame {
     
     // for use in graph algorithms
-    public static final int INFINITY = Integer.MAX_VALUE;
+    public static final int INFINITY = Integer.MAX_VALUE;    
     
     /**
-     * This takes in a file that maps graph node IDs to wiki IDs.
-     * Each line of input file is of form "<node_id> <page_id>".
-     * It will update the instance variable (a Map) wikiIDtoNodeID.
-     * Also creates a log file.
-     * 
-     * @param filePath Path to id_map file
-     * @return Number of IDs mapped
+     * Create a graph representation of the dataset based off of two files:
+     *   
+     *   (1) A "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
+     *   (i.e., <# vertices> <# edges>) and data rows of the form 
+     *   <wiki_id_from> <wiki_id_to> <link_section> (i.e., there is a link from the article given 
+     *   by wiki_id_from to the article given by wiki_id_to in the link_section-th section of 
+     *   the former).
+     *   
+     *   (2) An "id map file" (.txt). Each row in this file is of form 
+     *   "<node_id> <page_id> <article_title>", so it can be used to translate between these forms
+     *   of identifying an article. There is a header row giving the number of nodes.
+     *  
+     * @param idMapFilePath Path to id mapping file.
+     * @param graphFilePath Path to graph edges file.
      */
-    public int mapWikiIDtoNodeID(String filePath);
-    
-    /**
-     * This takes in a file that has Article Name to Node ID mappings. 
-     * Each line of input file is of form "<page_id \t title". There is also a header row.
-     * It will update the instance variable (a Map) articleNametoNodeID.
-     * 
-     * @param filePath - page_ids
-     * @return number of Articles mapped
-     */
-    public int mapArticleNametoNodeID(String filePath);
-    
-    /**
-     * Create a graph representation of the dataset. The format for the
-     * input file should be as follows: the first line contains two numbers
-     * the first is the number of nodes in the graph, the second is the 
-     * number of edges; each subsequent line represents an edge with the vertices
-     * being the first two numbers and the section of the article in which the link found
-     * as the third number.
-     * 
-     * @param filePath - graph_file
-     * @return (int) the number of entries (nodes) in the dataset (graph)
-     */
-    public int loadGraphFromDataSet(String filePath);
+    public void loadGraph(String idMapFilePath, String graphFilePath);
     
     /**
      * Returns the shortest path between two articles; the final path includes 
