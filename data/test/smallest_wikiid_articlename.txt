@@ -1,0 +1,9 @@
+200 MCIT
+1800 SEAS
+6000 Penn
+40 Engineering
+64 NYC
+4600 Philly
+90 Swarthmore
+95 Boston
+27 Bryn-Mawr

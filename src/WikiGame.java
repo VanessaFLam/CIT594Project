@@ -168,8 +168,8 @@ public class WikiGame implements IWikiGame {
                     // Get nodes.
                     int source_node_id = wikiIDtoNodeID.get(Integer.parseInt(toks[0]));
                     int dest_node_id   = wikiIDtoNodeID.get(Integer.parseInt(toks[1]));
-                    INode sourceNode = (INode) g.getNode(source_node_id);
-                    INode destNode   = (INode) g.getNode(dest_node_id);
+//                    INode sourceNode = (INode) g.getNode(source_node_id);
+//                    INode destNode   = (INode) g.getNode(dest_node_id);
                     
                     // Add edge to graph with weight.
                     int edge_wght   = Integer.parseInt(toks[2]);
@@ -179,8 +179,8 @@ public class WikiGame implements IWikiGame {
                     
                     
                     
-                    sourceNode.incrementOutdegree();
-                    destNode.incrementIndegree();
+//                    sourceNode.incrementOutdegree();
+//                    destNode.incrementIndegree();
                     edges_processed++;
 //                    if (print_progress && ((edges_processed % 10000) == 0)) {
                     if (print_progress) {
@@ -207,6 +207,7 @@ public class WikiGame implements IWikiGame {
             bw.close();
             
             // Return number of nodes.
+            numOfNodes = g.nodeCount();
             return g.nodeCount();
             
         } catch (IOException e) {
@@ -215,136 +216,6 @@ public class WikiGame implements IWikiGame {
         }
         
     }
-
-  public static final Integer DefualtEdgeWeight = 1;
-
-	// =============================================================================
-	// = CONSTRUCTOR
-	// =============================================================================
-	public WikiGame() {
-		g = new GraphL();
-		wikiIDtoNodeID = new HashMap<Integer, Integer>();
-		articleNametoNodeID = new HashMap<String, Integer>();
-	}
-
-	// =============================================================================
-	// = METHODS
-	// =============================================================================
-
-	// TODO: Method to create the hashmap -Jackson
-	public int mapWikiIDtoNodeID(String filePath) {
-		try {
-			// created buffered file reader
-			FileReader fr = new FileReader(filePath);
-			BufferedReader br = new BufferedReader(fr);
-			String line = br.readLine();
-
-			while (line != null) {
-				String[] toks = line.split("\\s+");
-
-				int wikiID = Integer.parseInt(toks[1]);
-				int nodeID = Integer.parseInt(toks[0]);
-
-				wikiIDtoNodeID.put(wikiID, nodeID);
-
-				line = br.readLine();
-			}
-			br.close();
-			return wikiIDtoNodeID.size();
-		} catch (IOException e) {
-			// print error message
-			System.out.println("Error reading input file: " + filePath);
-		}
-		return -1;
-	}
-
-	// Jackson
-	public int mapArticleNametoNodeID(String filePath) {
-		try {
-			// created buffered file reader
-			FileReader fr = new FileReader(filePath);
-			BufferedReader br = new BufferedReader(fr);
-
-			// skip the header line
-			br.readLine();
-
-			String line = br.readLine();
-
-			while (line != null) {
-				String[] toks = line.split("\\s+");
-
-				String articleName = toks[1];
-				int wikiID = Integer.parseInt(toks[0]);
-				System.out.println("looking for " + wikiID + " for " + articleName);
-
-				try {
-					int nodeID = wikiIDtoNodeID.get(wikiID);
-					System.out.println("adding " + articleName + " -> " + nodeID);
-					articleNametoNodeID.put(articleName, nodeID);
-					line = br.readLine();
-				} catch (NullPointerException e) {
-					line = br.readLine();
-					continue;
-				}
-
-			}
-			br.close();
-			return articleNametoNodeID.size();
-		} catch (IOException e) {
-			// print error message
-			System.out.println("Error reading input file: " + filePath);
-		}
-		return -1;
-	}
-
-	// Jackson
-	@Override
-	public int loadGraphFromDataSet(String filePath) {
-
-		// TODO: do we need to clear the graph? should i initialize graph here instead
-		// of in constructor?
-
-		try {
-			// created buffered file reader
-			FileReader fr = new FileReader(filePath);
-			BufferedReader br = new BufferedReader(fr);
-
-			// get number of nodes (from first line of input file)
-			String line = br.readLine();
-			String[] toks = line.split(" ");
-			g.init(Integer.parseInt(toks[0]) + 1);
-
-			// get next line and continue reading until EOF
-			line = br.readLine();
-			while (line != null) {
-				// split line into tokens, using space as delimiter
-				toks = line.split(" ");
-
-				// ignore line if one of the first two values is 0
-				if (Integer.parseInt(toks[0]) == 0 || Integer.parseInt(toks[1]) == 0) {
-					line = br.readLine();
-					continue;
-				}
-
-				// add edge to the graph
-				// TODO: decide which edge weight to use here
-				// TODO: should we validate data - i.e. check that parseInt is successful?
-				g.addEdge(Integer.parseInt(toks[0]), Integer.parseInt(toks[1]), DefualtEdgeWeight);
-				g.addEdge(Integer.parseInt(toks[0]), Integer.parseInt(toks[1]), Integer.parseInt(toks[2]));
-				// update indegrees and outdegrees
-
-				// get next line
-				line = br.readLine();
-			}
-		} catch (IOException e) {
-			// print error message
-			System.out.println("Error reading input file: " + filePath);
-		}
-
-		// save and return the number of nodes
-		numOfNodes = g.nodeCount() - 1;
-		return numOfNodes;
-	}
 
 	@Override
 	public Collection<Integer> findPath(int source, int destination, String param) {
@@ -367,7 +238,6 @@ public class WikiGame implements IWikiGame {
 			ret = findPathHops(source, destination);
 			break;
 		}
-		
 		return ret;
 	}
 
@@ -377,7 +247,7 @@ public class WikiGame implements IWikiGame {
 		// ========== VALIDATE INPUT ===========
 
 		// validate source and destination
-		if (source > numOfNodes || source < 1 || destination > numOfNodes || destination < 1) {
+		if (source >= numOfNodes || source < 0 || destination >= numOfNodes || destination < 0) {
 			return null;
 		}
 
@@ -508,7 +378,7 @@ public class WikiGame implements IWikiGame {
         // ========== VALIDATE INPUT ===========
         
         // validate source and destination
-        if (source > numOfNodes || source < 1 || destination > numOfNodes || destination < 1) {
+        if (source >= numOfNodes || source < 0 || destination >= numOfNodes || destination < 0) {
             return null;
         }
                 
@@ -552,6 +422,7 @@ public class WikiGame implements IWikiGame {
 	    	   if (shortestArray[w] > (shortestArray[v] + weight)) {
 	    		   shortestArray[w] = shortestArray[v] + weight;
 	    		   AbstractMap.SimpleEntry<Integer, Integer> wPair = new AbstractMap.SimpleEntry<Integer, Integer>(shortestArray[w], w);
+	    		   predArray[w] = v;
 	    		   q.offer(wPair);
 	    	   }
 	       }
@@ -580,30 +451,7 @@ public class WikiGame implements IWikiGame {
 	// = HELPER METHODS
 	// =============================================================================
 
-	// find the unvisited vertex with the minimum "shortest"
-	private int minVertex(int[] shortest, boolean[] visited) {
 
-		// initialize v to 0
-		int v = 0;
-
-		// set v to the first unvisited vertex;
-		for (int i = 0; i < g.nodeCount(); i++) {
-			if (!visited[i]) {
-				v = i;
-				break;
-			}
-		}
-
-		// now find the smallest
-		for (int i = 0; i < g.nodeCount(); i++) {
-			if ((!visited[i]) && (shortest[i] < shortest[v])) {
-				v = i;
-			}
-		}
-
-		// return v
-		return v;
-	}
 	
 	private int determineWeight(int v, int u, int weightType) {
 		int weight = 0;
