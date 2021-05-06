@@ -24,8 +24,6 @@ public class GraphL implements Graph {
     private List<Edge>[]        adjacencyLists;
     private Object[]            nodeValues;
     private int                 numEdge;
-
-
     
     /**
      * Empty no argument constructor
