@@ -27,6 +27,7 @@ public class WikiGame implements IWikiGame {
     Map<String, Collection<Integer>> articleNametoNodeIDs;
     
     public static final Integer DefaultEdgeWeight = 1;
+    public static boolean printProgress = true;
     
     // =============================================================================
     // = CONSTRUCTOR
@@ -67,6 +68,11 @@ public class WikiGame implements IWikiGame {
             String line = br.readLine();
             numOfNodes = Integer.parseInt(line);
             g.init(numOfNodes);
+            int counter = 0;
+            
+            if (printProgress) {
+                System.out.println("\t\tLoading node data. " + numOfNodes + " nodes in graph ...");
+            }
             
             // Read each line in the file.
             // Each line is of form "<node_id> <page_id> <article_title>".
@@ -91,6 +97,14 @@ public class WikiGame implements IWikiGame {
                         articleNametoNodeIDs.put(articleName, new ArrayList<Integer>());
                     } else {
                         articleNametoNodeIDs.get(articleName).add(nodeID);
+                    }
+                    
+                    counter++;
+                    if (printProgress) {
+                        if ((counter % (numOfNodes / 20)) == 0) {
+                            System.out.println("\t\t\t" + counter + " nodes processed (" 
+                                    + Math.round((float) (100 * counter) / numOfNodes) + "%) ...");
+                        }
                     }
                 
                 } catch (Exception e) {
@@ -131,6 +145,12 @@ public class WikiGame implements IWikiGame {
 
             // Header tells number of nodes and edges expected. Can skip here.
             String line = br.readLine();
+            long numOfEdges = Long.parseLong(line.split("\\s+")[1]);
+            long counter = 0;
+            
+            if (printProgress) {
+                System.out.println("\t\tLoading edge data. " + numOfEdges + " edges in graph ...");
+            }
 
             
             // Read each line in the file.
@@ -151,7 +171,14 @@ public class WikiGame implements IWikiGame {
                     int nodeID_to   = wikiIDtoNodeID.get(wikiID_to);                    
                     
                     // Add edge.
-                    g.addEdge(nodeID_from, nodeID_to, edgeWeight);                    
+                    g.addEdge(nodeID_from, nodeID_to, edgeWeight);
+                    counter++;
+                    if (printProgress) {
+                        if ((counter % (numOfEdges / 20)) == 0) {
+                            System.out.println("\t\t\t" + counter + " edges processed (" 
+                                    + Math.round((double) (100 * counter) / numOfEdges) + "%) ...");
+                        }
+                    }
                 
                 } catch (Exception e) {
                 
@@ -175,7 +202,6 @@ public class WikiGame implements IWikiGame {
         
     }    
        
-
 	@Override
 	public Collection<Integer> findPath(int source, int destination, String param) {
 		String lowerParam = param.toLowerCase(); 

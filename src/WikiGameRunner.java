@@ -4,19 +4,14 @@ public class WikiGameRunner {
     public static void main(String[] args) {
         
         // File paths all in one place.
-
-//        final String id_map_file   = "data/clean/full_idmap_file.txt";
-//        final String name_map_file = "data/clean/page_ids.csv";
-//        final String graph_file    = "data/clean/full_graph_file.mtx";
-    	
-    	 final String id_map_file   = "data/test/smallest_map.txt";
-//         final String name_map_file = "data/test/smallest_wikiid_articlename.txt";
-         final String graph_file    = "data/test/smallest_test.mtx";
-
+        final String id_map_file   = "data/clean/full_idmap_file.txt";
+        final String graph_file    = "data/clean/full_graph_file.mtx";
         
         // Toggle for print statements.
-        final boolean print_progress = true;
-        long startTime, endTime, elapsedTime;
+        final boolean print_progress = WikiGame.printProgress;
+        long startTime = 0;
+        long endTime = 0;
+        long elapsedTime = 0;
         
         // Create new Wikigame. Graph and maps are empty, numOfNodes = 0.
         WikiGame wg = new WikiGame();
@@ -25,10 +20,9 @@ public class WikiGameRunner {
             System.out.println("Building graph ...");
         }
         
-        // Load nodes.
+        // Load graph.
         if (print_progress) {
-            System.out.print("\tLoading node information from " + id_map_file
-                                + " (~?-? seconds expected) ... ");
+            System.out.println("\tLoading graph (~?-? seconds expected) ... ");
             startTime = System.nanoTime();
         }
         wg.loadGraph(id_map_file, graph_file);
