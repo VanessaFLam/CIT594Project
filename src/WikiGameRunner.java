@@ -29,7 +29,7 @@ public class WikiGameRunner {
         if (print_progress) {
             endTime   = System.nanoTime();
             elapsedTime = endTime - startTime;
-            System.out.println("finished in " + elapsedTime / 1000000000. + " seconds!");
+            System.out.println("\tFinished in " + elapsedTime / 1000000000. + " seconds!");
         }
 
     }
