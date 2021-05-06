@@ -151,7 +151,6 @@ public class WikiGame implements IWikiGame {
             if (printProgress) {
                 System.out.println("\t\tLoading edge data. " + numOfEdges + " edges in graph ...");
             }
-
             
             // Read each line in the file.
             // Each line is of form "<wiki_id_from> <wiki_id_to> <link_section>".
