@@ -1,33 +1,29 @@
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author OpenDSA
  *
  */
-public class GraphL
-    implements Graph
-{
+public class GraphL implements Graph {
 
-    public class Edge
-    { // Doubly linked list node
+    public class Edge {
+        
         int vertex;
         short weight; //how far down the page
-        Edge prev;
-        Edge next;
 
-
-        Edge(int v, short w, Edge p, Edge n)
-        {
+        Edge(int v, short w) {
             vertex = v;
             weight = w;
-            prev = p;
-            next = n;
         }
+        
     }
 
-    private Edge[]   nodeArray;
-    private Object[] nodeValues;
-    private int      numEdge;
+    private List<Edge>[]        adjacencyLists;
+    private Object[]            nodeValues;
+    private int                 numEdge;
 
 
     
@@ -40,22 +36,29 @@ public class GraphL
     }
 
 
-    // Initialize the graph with n vertices
+    // Initialize the graph with n vertices. Creates two "parallel" arrays - nodes and adj lists.
     public void init(int n)
     {
-        nodeArray = new Edge[n];
-        // List headers;
-        for (int i = 0; i < n; i++)
-            nodeArray[i] = new Edge(-1, (short) -1, null, null);
+        
+        // Create n empty adjacency lists.
+        adjacencyLists = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adjacencyLists[i] = new ArrayList<Edge>();
+        }
+
+        // Create n-object array to hold nodes.        
         nodeValues = new Object[n];
+        
+        // Initialize.
         numEdge = 0;
+        
     }
 
 
     // Return the number of vertices
     public int nodeCount()
     {
-        return nodeArray.length;
+        return adjacencyLists.length;
     }
 
 
@@ -80,91 +83,94 @@ public class GraphL
 	}
     
 	public Edge getEdge(int v, int w) {
-		if (hasEdge(v, w)) {
-			return find(v, w);
+	    int index = find(v, w);
+        if (index >= 0) {
+			return adjacencyLists[v].get(index);
 		} else {
 			return null;
 		}
 	}
 
 
-    // Return the link in v's neighbor list that preceeds the
-    // one with w (or where it would be)
-    private Edge find(int v, int w)
+    // Find the index of edge TO w in IN v's adjacency list, if it is in list. o/w -1.
+    private int find(int v, int w)
     {
-        Edge curr = nodeArray[v];
-        while ((curr.next != null) && (curr.next.vertex < w))
-            curr = curr.next;
-        return curr;
+        List<Edge> vAdjL = adjacencyLists[v];
+        for (int i = 0; i < vAdjL.size(); i++) {
+            if (vAdjL.get(i).vertex == w) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 
     // Adds a new edge from node v to node w with weight wgt
     public void addEdge(int v, int w, short wgt)
     {
+        
+        // No zero weight.
         if (wgt == 0)
             return; // Can't store weight of 0
-        Edge curr = find(v, w);
-        if ((curr.next != null) && (curr.next.vertex == w))
-            curr.next.weight = wgt;
-        else
-        {
-            curr.next = new Edge(w, wgt, curr, curr.next);
-            if (curr.next.next != null)
-                curr.next.next.prev = curr.next;
+        // Update weight if exists.
+        if (getEdge(v, w) != null) {
+            getEdge(v, w).weight = wgt;
+            return;
         }
+        // New edge!
+        adjacencyLists[v].add(new Edge(w, wgt));
         numEdge++;
+        return;
+        
     }
 
 
     // Get the weight value for an edge
     public int weight(int v, int w)
     {
-        Edge curr = find(v, w);
-        if ((curr.next == null) || (curr.next.vertex != w))
+        Edge e = getEdge(v, w);
+        if (e != null) {
+            return e.weight;
+        } else {
             return 0;
-        else
-            return curr.next.weight;
+        }
     }
 
 
     // Removes the edge from the graph.
     public void removeEdge(int v, int w)
     {
-        Edge curr = find(v, w);
-        if ((curr.next == null) || curr.next.vertex != w)
-            return;
-        else
-        {
-            curr.next = curr.next.next;
-            if (curr.next != null)
-                curr.next.prev = curr;
+        int index = find (v, w);
+        if (index >= 0) {
+            adjacencyLists[v].remove(index);
+            numEdge--;
         }
-        numEdge--;
     }
 
 
     // Returns true iff the graph has the edge
     public boolean hasEdge(int v, int w)
-    {
-        return weight(v, w) != 0;
+    {        
+        return (find(v, w) >= 0);
     }
 
     // Returns an array containing the indicies of the neighbors of v
     public int[] neighbors(int v)
     {
-        int cnt = 0;
-        Edge curr;
-        for (curr = nodeArray[v].next; curr != null; curr = curr.next)
-            cnt++;
-        int[] temp = new int[cnt];
-        cnt = 0;
-        for (curr = nodeArray[v].next; curr != null; curr = curr.next)
-            temp[cnt++] = curr.vertex;
-        return temp;
+        
+        // Get the adjacency list.
+        List<Edge> adjL = adjacencyLists[v];
+        
+        // Initialize neighbors array.
+        int[] nbrs = new int[adjL.size()];
+        
+        // Loop.
+        for (int i = 0; i < adjL.size(); i ++) {
+            nbrs[i] = adjL.get(i).vertex;
+        }
+        
+        return nbrs;
+       
     }
-
-
-
 
 }
