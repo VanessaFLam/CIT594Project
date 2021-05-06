@@ -22,11 +22,23 @@ public class WikiGame implements IWikiGame {
     // =============================================================================
 
     Graph g;
-    int numOfNodes;
+    public Graph getG() {
+		return g;
+	}
+
+	int numOfNodes;
     Map<Integer, Integer> wikiIDtoNodeID;
     Map<String, Collection<Integer>> articleNametoNodeIDs;
     
-    public static final Integer DefaultEdgeWeight = 1;
+    public Map<Integer, Integer> getWikiIDtoNodeID() {
+		return wikiIDtoNodeID;
+	}
+
+	public Map<String, Collection<Integer>> getArticleNametoNodeIDs() {
+		return articleNametoNodeIDs;
+	}
+
+	public static final Integer DefaultEdgeWeight = 1;
     public static boolean printProgress = true;
     
     // =============================================================================
@@ -86,19 +98,19 @@ public class WikiGame implements IWikiGame {
                     int nodeID = Integer.parseInt(toks[0]);
                     int wikiID = Integer.parseInt(toks[1]);
                     String articleName = toks[2];
+                    String lowerArticleName = articleName.toLowerCase();
                     
                     // Initialize node in graph.
-                    INode n = new Node(nodeID, wikiID, articleName);
+                    INode n = new Node(nodeID, wikiID, lowerArticleName);
                     g.setNode(nodeID, n);                    
                     
                     // Add to maps.
                     wikiIDtoNodeID.put(wikiID, nodeID);
-                    if (!articleNametoNodeIDs.containsKey(articleName)) {
-                        articleNametoNodeIDs.put(articleName, new ArrayList<Integer>());
-                    } else {
-                        articleNametoNodeIDs.get(articleName).add(nodeID);
+                    if (!articleNametoNodeIDs.containsKey(lowerArticleName)) {
+                        articleNametoNodeIDs.put(lowerArticleName, new ArrayList<Integer>());
                     }
-                    
+                    articleNametoNodeIDs.get(lowerArticleName).add(nodeID);
+
                     counter++;
                     if (printProgress) {
                         if ((counter % (numOfNodes / 20)) == 0) {
@@ -460,6 +472,17 @@ public class WikiGame implements IWikiGame {
 			break;
 		}
 		return weight;
+	}
+	
+	public Collection<String> translateToArticleNames(Collection<Integer> path) {
+		Collection<String> namePath = new ArrayList<String>();
+		LinkedList<Integer> intPath = (LinkedList<Integer>) path;
+		for (int i = 0; i < path.size(); i++) {
+			INode node = (INode) g.getNode(intPath.get(i));
+			String articleName = node.getName();
+			namePath.add(articleName);
+		}
+		return namePath;
 	}
 
 

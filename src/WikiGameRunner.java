@@ -1,11 +1,77 @@
+import java.util.*;
 
 public class WikiGameRunner {
+	
+	Scanner s;
+	public int getNodeIDFromArticle(String type, WikiGame wg) {
+		s = new Scanner(System.in);
+		System.out.println("Please input the name of the " + type + " Wikipedia page:");
+		String articleName = s.nextLine();
+		String lowerArticleName = articleName.toLowerCase();
+		Map<String, Collection<Integer>> map = wg.getArticleNametoNodeIDs();
+		ArrayList<Integer> nodeIDs = (ArrayList<Integer>) map.get(lowerArticleName);
+		int nodeID;
+		while (true) {
+			if (nodeIDs == null) {
+				System.out.println("This Wikipedia page does not exist, please input a different " + type + ":");
+				articleName = s.nextLine();
+				lowerArticleName = articleName.toLowerCase();
+				nodeIDs = (ArrayList<Integer>) map.get(lowerArticleName);
+			} else if (nodeIDs.size() > 1) {
+				System.out.println("There are several articles with that name. We will choose one at random for you");
+				System.out.println(nodeIDs);
+				Random r = new Random();
+				int num = r.nextInt(nodeIDs.size()) - 1;
+				nodeID = nodeIDs.get(num);
+				System.out.println(nodeID);
+				break;
+			} else if (nodeIDs.size() == 1) {
+				nodeID = nodeIDs.get(0);
+				break;
+			} else {
+				System.out.println("There are no Wikipedia pages with this name, please input a different " + type + ":");
+				articleName = s.nextLine();
+				nodeIDs = (ArrayList<Integer>) map.get(lowerArticleName);
+			}
+		}
+		return nodeID;
+	}
+	
+	public Collection<String> userInteraction(WikiGame wg) {
+		int source = getNodeIDFromArticle("source", wg);
+		int destination = getNodeIDFromArticle("destination", wg);
+		ArrayList<String> typeOptions = new ArrayList<String>();
+		typeOptions.add("hops");
+		typeOptions.add("indegree");
+		typeOptions.add("outdegree");
+		typeOptions.add("section");
+		System.out.println("Please choose from the following distance types:");	
+		System.out.println("Hops");
+		System.out.println("Indegree");
+		System.out.println("Outdegree");
+		System.out.println("Section");
+		String lowerType;
+		while (true) {
+			String type = s.nextLine();
+			lowerType = type.toLowerCase();
+			if (!typeOptions.contains(lowerType)) {
+				System.out.println("Please choose one of the above options");
+			} else {
+				break;
+			}
+		}
+		Collection<Integer> intPath = wg.findPath(source, destination, lowerType);
+		return wg.translateToArticleNames(intPath);
+	}
 
     public static void main(String[] args) {
-        
+        WikiGameRunner wgr = new WikiGameRunner();
         // File paths all in one place.
         final String id_map_file   = "data/clean/full_idmap_file.txt";
         final String graph_file    = "data/clean/full_graph_file.mtx";
+        
+//        final String id_map_file   = "data/test/smallest_map.txt";
+//	    final String graph_file    = "data/test/smallest_test.mtx";
         
         // Toggle for print statements.
         final boolean print_progress = WikiGame.printProgress;
@@ -32,7 +98,8 @@ public class WikiGameRunner {
             System.out.println("\tFinished in " + elapsedTime / 1000000000. + " seconds!");
         }
         
-        System.out.println(wg.findPath(1000, 2000, "hops"));
+
+        System.out.println(wgr.userInteraction(wg));
 
     }
     
