@@ -11,12 +11,12 @@ public class GraphL
     public class Edge
     { // Doubly linked list node
         int vertex;
-        int weight; //how far down the page
+        short weight; //how far down the page
         Edge prev;
         Edge next;
 
 
-        Edge(int v, int w, Edge p, Edge n)
+        Edge(int v, short w, Edge p, Edge n)
         {
             vertex = v;
             weight = w;
@@ -46,7 +46,7 @@ public class GraphL
         nodeArray = new Edge[n];
         // List headers;
         for (int i = 0; i < n; i++)
-            nodeArray[i] = new Edge(-1, -1, null, null);
+            nodeArray[i] = new Edge(-1, (short) -1, null, null);
         nodeValues = new Object[n];
         numEdge = 0;
     }
@@ -100,7 +100,7 @@ public class GraphL
 
 
     // Adds a new edge from node v to node w with weight wgt
-    public void addEdge(int v, int w, int wgt)
+    public void addEdge(int v, int w, short wgt)
     {
         if (wgt == 0)
             return; // Can't store weight of 0

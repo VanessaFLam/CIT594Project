@@ -163,7 +163,7 @@ public class WikiGame implements IWikiGame {
                     String[] toks = line.split("\\s+");         
                     int wikiID_from = Integer.parseInt(toks[0]);
                     int wikiID_to   = Integer.parseInt(toks[1]);
-                    int edgeWeight  = Integer.parseInt(toks[2]);
+                    short edgeWeight  = (short) Integer.parseInt(toks[2]);
                     
                     // Get node ids.
                     int nodeID_from = wikiIDtoNodeID.get(wikiID_from);

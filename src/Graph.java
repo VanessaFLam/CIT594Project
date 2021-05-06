@@ -48,7 +48,7 @@ public interface Graph
      * @param w   - the to node
      * @param wgt - the weight of the edge
      */
-    void addEdge(int v, int w, int wgt);
+    void addEdge(int v, int w, short wgt);
 
 
     /**
