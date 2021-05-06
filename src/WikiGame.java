@@ -172,6 +172,10 @@ public class WikiGame implements IWikiGame {
                     // Add edge.
                     g.addEdge(nodeID_from, nodeID_to, edgeWeight);
                     counter++;
+                    INode nodeIDFrom = (INode) g.getNode(nodeID_from);
+                    INode nodeIDTo = (INode) g.getNode(nodeID_to);
+                    nodeIDFrom.incrementOutdegree();
+                    nodeIDTo.incrementIndegree();
                     if (printProgress) {
                         if ((counter % (numOfEdges / 20)) == 0) {
                             System.out.println("\t\t\t" + counter + " edges processed (" 

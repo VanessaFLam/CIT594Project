@@ -31,6 +31,8 @@ public class WikiGameRunner {
             elapsedTime = endTime - startTime;
             System.out.println("\tFinished in " + elapsedTime / 1000000000. + " seconds!");
         }
+        
+        System.out.println(wg.findPath(1000, 2000, "hops"));
 
     }
     
