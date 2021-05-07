@@ -53,7 +53,7 @@ public class WikiGame implements IWikiGame {
         
     }    
     
-    public String loadNodes(String filePath) {
+    public int loadNodes(String filePath) {
         
         final String logPath = "data/logs/load_nodes_error_log.txt";
         
@@ -123,11 +123,11 @@ public class WikiGame implements IWikiGame {
             // Return summary of key values in string.
             String result = numOfNodes + " " + wikiIDtoNodeID.size() 
                                                         + " " + articleNametoNodeIDs.size();
-            return result;
+            return g.nodeCount();
             
         } catch (IOException e) {
             e.printStackTrace();
-            return null;          
+            return -1;          
         }
         
     }
