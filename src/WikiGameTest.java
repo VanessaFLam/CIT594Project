@@ -10,8 +10,6 @@ public class WikiGameTest {
 
 	@Before
 	public void setUp() throws Exception {
-		
-		
 	}
 
 	@Test
@@ -54,13 +52,28 @@ public class WikiGameTest {
         wg.loadGraph(id_map_file, graph_file);
         
         List<Integer> ans = new LinkedList<Integer>();
-//        ans.add(0);
-//        ans.add(2);
-//        ans.add(6);
-//        ans.add(8);
+        ans.add(0);
+        ans.add(2);
+        ans.add(6);
+        ans.add(8);
         
-        //NEED TO FIX.
-        System.out.println(wg.findPath(0, 8, "indegree"));
+        assertEquals(ans, wg.findPath(0, 8, "indegree"));
+	}
+	
+	@Test
+	public void testOutdegreeSmallest() {
+		final String id_map_file   = "data/test/smallest_map.txt";
+	   	 final String graph_file    = "data/test/smallest_test.mtx";
+        
+        WikiGame wg = new WikiGame();
+        wg.loadGraph(id_map_file, graph_file);
+        
+        List<Integer> ans = new LinkedList<Integer>();
+        ans.add(0);
+        ans.add(3);
+        ans.add(8);
+        
+        assertEquals(ans, wg.findPath(0, 8, "outdegree"));
 	}
 
 }
