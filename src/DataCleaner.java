@@ -57,6 +57,7 @@ public class DataCleaner {
                     
                 } catch (Exception e) {
                     System.out.println("Error in buildWikiIDtoArticleNameMap parsing: " + line);
+                    e.printStackTrace();
                 }
                 line = br.readLine();
                 
@@ -174,35 +175,35 @@ public class DataCleaner {
                             (JSONArray) ((JSONObject) sections.get(i)).get("target_page_ids");
                     
                     // Iterate over links.
-                    int num_section_links = sectionLinks.size();
-                    for (int j = 0; j < num_section_links; j++) {
+                    int numSectionLinks = sectionLinks.size();
+                    for (int j = 0; j < numSectionLinks; j++) {
                         
-                        long link_wiki_id = (long) sectionLinks.get(j); // Get page id of link.
-                        if (pageIDs.add(link_wiki_id)) {                // If new, add to set.
+                        long linkWikiID = (long) sectionLinks.get(j); // Get page id of link.
+                        if (pageIDs.add(linkWikiID)) {                // If new, add to set.
 
                             // Get article name.
-                            String articleName = wikiIDtoArticleNameMap.get(link_wiki_id);
+                            String articleName = wikiIDtoArticleNameMap.get(linkWikiID);
 
                             if (articleName != null) {                   // Add to id map file.
 
                                 idMapBW.write(pagesCount + "\t"
-                                        + link_wiki_id + "\t"
+                                        + linkWikiID + "\t"
                                         + articleName + "\n");     
                                 idMapBW.flush();
                                 pagesCount++;                           // Increment counter.
 
                             } else {                                     // Otherwise log error.
 
-                                logBW.write("Failed to match wikiID: " + link_wiki_id + "\n");
+                                logBW.write("Failed to match wikiID: " + linkWikiID + "\n");
 
                             }
 
                         }
-                        if (!linksSeen.contains(link_wiki_id)) {        // If new link for page...
+                        if (!linksSeen.contains(linkWikiID)) {        // If new link for page...
                             linksCount++;                               // - Increment link count.
-                            linksSeen.add(link_wiki_id);                // - Update list seen.
+                            linksSeen.add(linkWikiID);                // - Update list seen.
                             graphBW.write(wikiID + "\t"                      // - Write to file.
-                                    + link_wiki_id + "\t" 
+                                    + linkWikiID + "\t" 
                                     + i + "\n");  
                         }
                         
