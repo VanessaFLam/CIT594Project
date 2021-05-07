@@ -22,21 +22,10 @@ public class WikiGame implements IWikiGame {
     // =============================================================================
 
     Graph g;
-    public Graph getG() {
-		return g;
-	}
-
 	int numOfNodes;
     Map<Integer, Integer> wikiIDtoNodeID;
     Map<String, Collection<Integer>> articleNametoNodeIDs;
-    
-    public Map<Integer, Integer> getWikiIDtoNodeID() {
-		return wikiIDtoNodeID;
-	}
-
-	public Map<String, Collection<Integer>> getArticleNametoNodeIDs() {
-		return articleNametoNodeIDs;
-	}
+   
 
 	public static final Integer DefaultEdgeWeight = 1;
     public static boolean printProgress = true;
@@ -483,6 +472,22 @@ public class WikiGame implements IWikiGame {
 			namePath.add(articleName);
 		}
 		return namePath;
+	}
+	
+	// =============================================================================
+	// = GETTERS AND SETTERS
+	// =============================================================================
+
+	
+    public Graph getG() {
+		return g;
+	}
+    public Map<Integer, Integer> getWikiIDtoNodeID() {
+		return wikiIDtoNodeID;
+	}
+
+	public Map<String, Collection<Integer>> getArticleNametoNodeIDs() {
+		return articleNametoNodeIDs;
 	}
 
 
