@@ -1,43 +1,62 @@
-27406894	1
-46734063	2
-7950	3
-50076	4
-10272	5
-10553	6
-3950	7
-4940	8
-23442958	9
-30353	10
-11456	11
-24638	12
-326011	13
-5671	14
-41741	15
-13677	16
-2982762	17
-127070	18
-15613	19
-32427	20
-32600	21
-6558	22
-11846	23
-320408	24
-33882	25
-58984	26
-3292	27
-29837	28
-20405	29
-1121570	30
-26227	31
-159494	32
-67393	33
-1187	34
-22939	35
-19727	36
-33516	37
-25919	38
-20611562	39
-13543	40
-15490	41
-27978	42
-19167553	43
+61
+0	27406894	Musical Instrument
+1	46734063	Horn
+2	7950	Drum
+3	50076	String Instrument
+4	10272	Electric guitar
+5	10553	Flute
+6	3950	Bagpipes
+7	4940	Brass Instrument
+8	23442958	Wind Instrument
+9	30353	Trumpet
+10	11456	French Horn
+11	24638	Percussion Instrument
+12	326011	Djembe
+13	5671	Cymbal
+14	41741	Standing waves
+15	13677	Hindus
+16	2982762	Goatskin
+17	127070	Bugle
+18	15613	Jazz
+19	32427	Violin
+20	32600	Viola
+21	6558	Cello
+22	11846	Guitar
+23	320408	Guitar Amplifier
+24	33882	Woodwind Instruments
+25	58984	Reed
+26	3292	Brass
+27	29837	Trombone
+28	20405	Miles Davis
+29	1121570	Rotary Valves
+30	26227	Rhythm
+31	159494	Triangle (musical instrument)
+32	67393	West Africa
+33	1187	Alloys
+34	22939	Physics
+35	19727	Michael Faraday
+36	33516	Wave
+37	25919	River Rapids
+38	20611562	Indian Subcontinent
+39	13543	Hinduism
+40	15490	Indus River
+41	27978	Skin
+42	19167553	Goat
+43	17158563	Sheep
+44	19714	Milk
+45	246806	Ruminant
+46	18838	Mammal
+47	26051975	Cattle
+48	36856	Vertabrate
+49	9028799	Bacteria
+50	19178965	Fungus
+51	11039790	Animal
+52	25409	Reptile
+53	3410	Bird
+54	15223	Invertebrate
+55	621	Amphibian
+56	24536543	Eukaryote
+57	50873	Feather
+58	33583	World Health Organization
+59	43986	Prokaryote
+60	706020	Pillow

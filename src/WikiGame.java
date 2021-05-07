@@ -22,11 +22,12 @@ public class WikiGame implements IWikiGame {
     // =============================================================================
 
     Graph g;
-    int numOfNodes;
+	int numOfNodes;
     Map<Integer, Integer> wikiIDtoNodeID;
     Map<String, Collection<Integer>> articleNametoNodeIDs;
-    
-    public static final Integer DefaultEdgeWeight = 1;
+   
+
+	public static final Integer DefaultEdgeWeight = 1;
     public static boolean printProgress = true;
     
     // =============================================================================
@@ -52,7 +53,7 @@ public class WikiGame implements IWikiGame {
         
     }    
     
-    public String loadNodes(String filePath) {
+    public int loadNodes(String filePath) {
         
         final String logPath = "data/logs/load_nodes_error_log.txt";
         
@@ -86,19 +87,19 @@ public class WikiGame implements IWikiGame {
                     int nodeID = Integer.parseInt(toks[0]);
                     int wikiID = Integer.parseInt(toks[1]);
                     String articleName = toks[2];
+                    String lowerArticleName = articleName.toLowerCase();
                     
                     // Initialize node in graph.
-                    INode n = new Node(nodeID, wikiID, articleName);
+                    INode n = new Node(nodeID, wikiID, lowerArticleName);
                     g.setNode(nodeID, n);                    
                     
                     // Add to maps.
                     wikiIDtoNodeID.put(wikiID, nodeID);
-                    if (!articleNametoNodeIDs.containsKey(articleName)) {
-                        articleNametoNodeIDs.put(articleName, new ArrayList<Integer>());
-                    } else {
-                        articleNametoNodeIDs.get(articleName).add(nodeID);
+                    if (!articleNametoNodeIDs.containsKey(lowerArticleName)) {
+                        articleNametoNodeIDs.put(lowerArticleName, new ArrayList<Integer>());
                     }
-                    
+                    articleNametoNodeIDs.get(lowerArticleName).add(nodeID);
+
                     counter++;
                     if (printProgress) {
                         if ((counter % (numOfNodes / 20)) == 0) {
@@ -122,11 +123,11 @@ public class WikiGame implements IWikiGame {
             // Return summary of key values in string.
             String result = numOfNodes + " " + wikiIDtoNodeID.size() 
                                                         + " " + articleNametoNodeIDs.size();
-            return result;
+            return g.nodeCount();
             
         } catch (IOException e) {
             e.printStackTrace();
-            return null;          
+            return -1;          
         }
         
     }
@@ -172,6 +173,10 @@ public class WikiGame implements IWikiGame {
                     // Add edge.
                     g.addEdge(nodeID_from, nodeID_to, edgeWeight);
                     counter++;
+                    INode nodeIDFrom = (INode) g.getNode(nodeID_from);
+                    INode nodeIDTo = (INode) g.getNode(nodeID_to);
+                    nodeIDFrom.incrementOutdegree();
+                    nodeIDTo.incrementIndegree();
                     if (printProgress) {
                         if ((counter % (numOfEdges / 20)) == 0) {
                             System.out.println("\t\t\t" + counter + " edges processed (" 
@@ -263,6 +268,7 @@ public class WikiGame implements IWikiGame {
 			// remove node at front of queue
 			v = q.poll();
 
+			
 			// call neighbors and iterate over them
 			int[] neighbors = g.neighbors(v); // TODO: decide what g.neighbors is returning - collection or array
 			for (int i = 0; i < neighbors.length; i++) {
@@ -274,6 +280,7 @@ public class WikiGame implements IWikiGame {
 					predArray[u] = v;
 					visitedArray[u] = true;
 					shortestArray[u] = shortestArray[v] + 1;
+					if (u == destination) break;
 				}
 			}
 		}
@@ -347,11 +354,11 @@ public class WikiGame implements IWikiGame {
 	   public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
 	
 	       // find the difference in the indegree for each node
-	       int shortestDiff = o2.getKey() - o1.getKey();
+	       int shortestDiff = o1.getKey() - o2.getKey();
 	
 	       // if they have the same indegree, sort by article id
 	       if (shortestDiff == 0) {
-	           return o2.getValue() - o1.getValue();
+	           return o1.getValue() - o2.getValue();
 	       }
 	       
 	       // otherwise return the difference of the indegrees
@@ -396,6 +403,8 @@ public class WikiGame implements IWikiGame {
         		v = t.getValue();
         	} while (visitedArray[v]); 	
 	       visitedArray[v] = true;
+	       
+	       if (v == destination) break;
 	       
 	       if(shortestArray[v] == INFINITY) break;
 	       int[] nList = g.neighbors(v);
@@ -456,6 +465,33 @@ public class WikiGame implements IWikiGame {
 			break;
 		}
 		return weight;
+	}
+	
+	public Collection<String> translateToArticleNames(Collection<Integer> path) {
+		Collection<String> namePath = new ArrayList<String>();
+		LinkedList<Integer> intPath = (LinkedList<Integer>) path;
+		for (int i = 0; i < path.size(); i++) {
+			INode node = (INode) g.getNode(intPath.get(i));
+			String articleName = node.getName();
+			namePath.add(articleName);
+		}
+		return namePath;
+	}
+	
+	// =============================================================================
+	// = GETTERS AND SETTERS
+	// =============================================================================
+
+	
+    public Graph getG() {
+		return g;
+	}
+    public Map<Integer, Integer> getWikiIDtoNodeID() {
+		return wikiIDtoNodeID;
+	}
+
+	public Map<String, Collection<Integer>> getArticleNametoNodeIDs() {
+		return articleNametoNodeIDs;
 	}
 
 
