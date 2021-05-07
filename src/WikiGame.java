@@ -268,6 +268,7 @@ public class WikiGame implements IWikiGame {
 			// remove node at front of queue
 			v = q.poll();
 
+			
 			// call neighbors and iterate over them
 			int[] neighbors = g.neighbors(v); // TODO: decide what g.neighbors is returning - collection or array
 			for (int i = 0; i < neighbors.length; i++) {
@@ -279,6 +280,7 @@ public class WikiGame implements IWikiGame {
 					predArray[u] = v;
 					visitedArray[u] = true;
 					shortestArray[u] = shortestArray[v] + 1;
+					if (u == destination) break;
 				}
 			}
 		}
@@ -352,11 +354,11 @@ public class WikiGame implements IWikiGame {
 	   public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
 	
 	       // find the difference in the indegree for each node
-	       int shortestDiff = o2.getKey() - o1.getKey();
+	       int shortestDiff = o1.getKey() - o2.getKey();
 	
 	       // if they have the same indegree, sort by article id
 	       if (shortestDiff == 0) {
-	           return o2.getValue() - o1.getValue();
+	           return o1.getValue() - o2.getValue();
 	       }
 	       
 	       // otherwise return the difference of the indegrees
@@ -401,6 +403,8 @@ public class WikiGame implements IWikiGame {
         		v = t.getValue();
         	} while (visitedArray[v]); 	
 	       visitedArray[v] = true;
+	       
+	       if (v == destination) break;
 	       
 	       if(shortestArray[v] == INFINITY) break;
 	       int[] nList = g.neighbors(v);
