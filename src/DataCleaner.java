@@ -57,7 +57,6 @@ public class DataCleaner {
                     
                 } catch (Exception e) {
                     System.out.println("Error in buildWikiIDtoArticleNameMap parsing: " + line);
-                    e.printStackTrace();
                 }
                 line = br.readLine();
                 
@@ -371,43 +370,43 @@ public class DataCleaner {
     // #############################################################################
     // = MAIN FUNCTION - USE TO GENERATE DATA FILES
     // #############################################################################
-    
-    /**
-     * Toggle the relevant sections to generate files.
-     */
-    public static void main(String[] args) {
-        
-        long startTime = System.nanoTime();
-        
-        /* BUILD WIKI ID TO ARTICLE NAME MAP (TAKES ~30 SECONDS) */
-        Map<Long, String> wikiIDtoArticleNameMap = 
-                buildWikiIDtoArticleNameMap("data/raw/page.csv");
-            
-        /* CREATE SNIPPET GRAPH & MAP FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
-        boolean createSnippets = false;   // << Toggle to "true" to generate.
-        if (createSnippets) {
-            getLinkFileSnippet(1);
-            getLinkFileSnippet(10);
-            getLinkFileSnippet(100);
-            parseLinkData("data/raw/link_annotated_text_first_1.jsonl", wikiIDtoArticleNameMap,
-                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
-            parseLinkData("data/raw/link_annotated_text_first_10.jsonl", wikiIDtoArticleNameMap,
-                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt");
-            parseLinkData("data/raw/link_annotated_text_first_100.jsonl", wikiIDtoArticleNameMap,
-                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
-        }
-        
-        /* CREATE FULL GRAPH & MAP FILES (TAKES ~15 MIN) */
-        boolean createFull = true;   // << Toggle to "true" to generate.
-        if (createFull) {
-            parseLinkData("data/raw/link_annotated_text.jsonl", wikiIDtoArticleNameMap,
-                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt");         
-        }
-        
-        long endTime   = System.nanoTime();
-        long totalTime = endTime - startTime;
-        System.out.println("Time to run: " + totalTime / 1000000000. + " seconds");
-        
-    }
+//    
+//    /**
+//     * Toggle the relevant sections to generate files.
+//     */
+//    public static void main(String[] args) {
+//        
+//        long startTime = System.nanoTime();
+//        
+//        /* BUILD WIKI ID TO ARTICLE NAME MAP (TAKES ~30 SECONDS) */
+//        Map<Long, String> wikiIDtoArticleNameMap = 
+//                buildWikiIDtoArticleNameMap("data/raw/page.csv");
+//            
+//        /* CREATE SNIPPET GRAPH & MAP FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
+//        boolean createSnippets = false;   // << Toggle to "true" to generate.
+//        if (createSnippets) {
+//            getLinkFileSnippet(1);
+//            getLinkFileSnippet(10);
+//            getLinkFileSnippet(100);
+//            parseLinkData("data/raw/link_annotated_text_first_1.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
+//            parseLinkData("data/raw/link_annotated_text_first_10.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt");
+//            parseLinkData("data/raw/link_annotated_text_first_100.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
+//        }
+//        
+//        /* CREATE FULL GRAPH & MAP FILES (TAKES ~15 MIN) */
+//        boolean createFull = true;   // << Toggle to "true" to generate.
+//        if (createFull) {
+//            parseLinkData("data/raw/link_annotated_text.jsonl", wikiIDtoArticleNameMap,
+//                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt");         
+//        }
+//        
+//        long endTime   = System.nanoTime();
+//        long totalTime = endTime - startTime;
+//        System.out.println("Time to run: " + totalTime / 1000000000. + " seconds");
+//        
+//    }
 
 }
