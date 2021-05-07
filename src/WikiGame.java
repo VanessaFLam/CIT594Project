@@ -51,8 +51,9 @@ public class WikiGame implements IWikiGame {
         loadNodes(id_map_file);
         loadEdges(graph_file);
         
-    }    
+    }  
     
+    @Override
     public int loadNodes(String filePath) {
         
         final String logPath = "data/logs/load_nodes_error_log.txt";
@@ -131,7 +132,8 @@ public class WikiGame implements IWikiGame {
         }
         
     }
-
+    
+    @Override
     public int loadEdges(String filePath) {
         
         final String logPath = "data/logs/load_edges_error_log.txt";
@@ -321,13 +323,6 @@ public class WikiGame implements IWikiGame {
 		return dijkstra(source, destination, 0);
 	}
 
-	@Override
-	public int countConnectedComponents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	
 	/**
 	 * method to run Dijkstra's algorithm to find the shortest path between the
 	 * source and destination articles using the specified weight-type as edge

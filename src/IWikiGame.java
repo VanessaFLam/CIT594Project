@@ -7,21 +7,42 @@ public interface IWikiGame {
     
     /**
      * Create a graph representation of the dataset based off of two files:
-     *   
-     *   (1) A "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
+     * <ol>
+     *   <li> A "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
      *   (i.e., <# vertices> <# edges>) and data rows of the form 
-     *   <wiki_id_from> <wiki_id_to> <link_section> (i.e., there is a link from the article given 
+     *   "< wiki_id_from > < wiki_id_to > < link_section >" (i.e., there is a link from the article given 
      *   by wiki_id_from to the article given by wiki_id_to in the link_section-th section of 
      *   the former).
      *   
-     *   (2) An "id map file" (.txt). Each row in this file is of form 
-     *   "<node_id> <page_id> <article_title>", so it can be used to translate between these forms
+     *   <li> An "id map file" (.txt). Each row in this file is of form 
+     *   "< node_id > < page_id > < article_title >", so it can be used to translate between these forms
      *   of identifying an article. There is a header row giving the number of nodes.
-     *  
+     * </ol>
      * @param idMapFilePath Path to id mapping file.
      * @param graphFilePath Path to graph edges file.
      */
     public void loadGraph(String idMapFilePath, String graphFilePath);
+    
+    /**
+     * Load nodes from an "id map file" (.txt). Each row in this file is of form 
+     *   "< node_id > < page_id > < article_title >". There is a header row giving the number of nodes. This method
+     *   adds each of the nodes to the graph and also updates the wikiIDtoNodeID and articleNametoNodeID maps.
+     *   
+     * @param filePath Path to id mapping file
+     * @return (int) number of nodes in the graph
+     */
+    public int loadNodes(String filePath);
+    
+    /**
+     * Load edges from a "graph file" (.mtx). This file has a header row of form <# articles> <# links> 
+     *   (i.e., <# vertices> <# edges>) and data rows of the form 
+     *   "< wiki_id_from > < wiki_id_to > < link_section >" (i.e., there is a link from the article given 
+     *   by wiki_id_from to the article given by wiki_id_to in the link_section-th section of 
+     *   the former).
+     * @param filePath Path to graph edges file
+     * @return (int) number of edges in the graph
+     */
+    public int loadEdges(String filePath);
     
     /**
      * Returns the shortest path between two articles; the final path includes 
@@ -37,7 +58,7 @@ public interface IWikiGame {
      * <li> "outdegree" - the outdegree of the destination article
      * <li> "section" - how far down the page the link is
      * </ul>
-     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
+     * @return (Collection< Integer >) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPath(int source, int destination, String type);
     
@@ -86,12 +107,5 @@ public interface IWikiGame {
      * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
      */
     public Collection<Integer> findPathSection(int source, int destination);
-    
-    /**
-     * Runs DFS on the graph to count the number of connected components and
-     * whether or not Wikipedia is completely connected
-     * @return (int) number of connected components
-     */
-    int countConnectedComponents();
            
 }
