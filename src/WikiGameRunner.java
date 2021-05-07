@@ -63,15 +63,39 @@ public class WikiGameRunner {
 		Collection<Integer> intPath = wg.findPath(source, destination, lowerType);
 		return wg.translateToArticleNames(intPath);
 	}
+	
+	public void runUntilQuit(WikiGame wg) {
+		boolean quit = false;
+		while (quit == false) {
+			System.out.println(userInteraction(wg));
+			System.out.println("Do you want to play again? (yes/no)");
+			String quitString = s.next();
+			String quitStringLower = quitString.toLowerCase().trim();
+			while (true) {
+				if (quitStringLower.compareTo("no") == 0) {
+					quit = true;
+					System.out.println("Thanks for playing!");
+					break;
+				} else if (quitStringLower.compareTo("yes") == 0) {
+					break;
+				} else {
+					System.out.println("Please type yes or no");
+					quitString = s.next();
+					quitStringLower = quitString.toLowerCase();
+				}
+			}
+		}
+
+	}
 
     public static void main(String[] args) {
         WikiGameRunner wgr = new WikiGameRunner();
         // File paths all in one place.
-        final String id_map_file   = "data/clean/full_idmap_file.txt";
-        final String graph_file    = "data/clean/full_graph_file.mtx";
+//        final String id_map_file   = "data/clean/full_idmap_file.txt";
+//        final String graph_file    = "data/clean/full_graph_file.mtx";
         
-//        final String id_map_file   = "data/test/smallest_map.txt";
-//	    final String graph_file    = "data/test/smallest_test.mtx";
+        final String id_map_file   = "data/test/smallest_map.txt";
+	    final String graph_file    = "data/test/smallest_test.mtx";
         
         // Toggle for print statements.
         final boolean print_progress = WikiGame.printProgress;
@@ -99,7 +123,8 @@ public class WikiGameRunner {
         }
         
 
-        System.out.println(wgr.userInteraction(wg));
+//        System.out.println(wgr.userInteraction(wg));
+        wgr.runUntilQuit(wg);
 
     }
     

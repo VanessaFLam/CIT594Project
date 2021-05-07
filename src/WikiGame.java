@@ -94,7 +94,7 @@ public class WikiGame implements IWikiGame {
                 try {
                     
                     // Get tokens.
-                    String[] toks = line.split("\\s+");         
+                    String[] toks = line.split("\t");         
                     int nodeID = Integer.parseInt(toks[0]);
                     int wikiID = Integer.parseInt(toks[1]);
                     String articleName = toks[2];
@@ -157,7 +157,7 @@ public class WikiGame implements IWikiGame {
 
             // Header tells number of nodes and edges expected. Can skip here.
             String line = br.readLine();
-            long numOfEdges = Long.parseLong(line.split("\\s+")[1]);
+            long numOfEdges = Long.parseLong(line.split("\t")[1]);
             long counter = 0;
             
             if (printProgress) {
@@ -172,7 +172,7 @@ public class WikiGame implements IWikiGame {
                 try {
                     
                     // Get tokens.
-                    String[] toks = line.split("\\s+");         
+                    String[] toks = line.split("\t");         
                     int wikiID_from = Integer.parseInt(toks[0]);
                     int wikiID_to   = Integer.parseInt(toks[1]);
                     int edgeWeight  = Integer.parseInt(toks[2]);
