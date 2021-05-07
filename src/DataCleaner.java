@@ -282,131 +282,31 @@ public class DataCleaner {
                         
         return null;
         
-    }    
-
-    // =============================================================================
-    // = FILE SNIPPET CREATION
-    // =============================================================================
-    
-    /**
-     * Copies the first {@code n} lines of the "full" csv file "data/raw/page.csv"
-     * to a file stored in the same directory with the suffix "_first_n" added.
-     * 
-     * @param n The number of lines to include
-     */
-    @SuppressWarnings("unused")
-    private static void getCSVFileSnippet(int n) {
-        
-        try {
-            
-            // Set up reader / writer. 
-            BufferedReader br = new BufferedReader(new FileReader("data/raw/page.csv"));
-            BufferedWriter bw = new BufferedWriter(
-                    new FileWriter("data/raw/page" + "_first_" + n + ".csv"));
-            
-            // Read / write first n lines to new file.
-            String line;
-            line = br.readLine();
-            while (n > 0) {
-                bw.write(line + "\n");
-                n--;
-                bw.flush();
-                line = br.readLine();
-            }
-            
-            // Close reader / writer.
-            bw.close();
-            br.close();
-            
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Copies the first {@code n} lines of the "full" link file "data/raw/link_annotated_text.jsonl"
-     * to a file stored in the same directory with the suffix "_first_n" added.
-     * 
-     * @param n The number of lines to include
-     */
-    private static void getLinkFileSnippet(int n) {
-        
-        try {
-            
-            // Set up reader / writer.
-            FileReader     fr = new FileReader("data/raw/link_annotated_text.jsonl");
-            BufferedReader br = new BufferedReader(fr);
-            FileWriter     fw = new FileWriter(
-                                        "data/raw/link_annotated_text" + "_first_" + n + ".jsonl");
-            BufferedWriter bw = new BufferedWriter(fw);
-        
-            // Read / write first n lines to new file.
-            String line;
-            line = br.readLine();
-            while (n > 0) {
-                bw.write(line + "\n");
-                n--;
-                bw.flush();
-                line = br.readLine();
-            }
-            
-            // Close reader / writer.
-            bw.close();
-            br.close();
-        
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-    }
+    }        
     
     // #############################################################################
     // = MAIN FUNCTION - USE TO GENERATE DATA FILES
     // #############################################################################
-//    
+    
 //    /**
 //     * Toggle the relevant sections to generate files.
 //     */
 //    public static void main(String[] args) {
-//        
+//
 //        long startTime = System.nanoTime();
-//        
+//
 //        /* BUILD WIKI ID TO ARTICLE NAME MAP (TAKES ~30 SECONDS) */
 //        Map<Long, String> wikiIDtoArticleNameMap = 
-//                buildWikiIDtoArticleNameMap("data/raw/page.csv");
-//            
-//        /* CREATE SNIPPET GRAPH & MAP FILES OF THE FIRST 1/10/100 LINES OF THE LINKS FILE */
-//        boolean createSnippets = false;   // << Toggle to "true" to generate.
-//        if (createSnippets) {
-//            getLinkFileSnippet(1);
-//            getLinkFileSnippet(10);
-//            getLinkFileSnippet(100);
-//            parseLinkData("data/raw/link_annotated_text_first_1.jsonl", wikiIDtoArticleNameMap,
-//                    "data/clean/graph_file_first_1.mtx", "data/clean/idmap_file_first_1.txt");
-//            parseLinkData("data/raw/link_annotated_text_first_10.jsonl", wikiIDtoArticleNameMap,
-//                    "data/clean/graph_file_first_10.mtx", "data/clean/idmap_file_first_10.txt");
-//            parseLinkData("data/raw/link_annotated_text_first_100.jsonl", wikiIDtoArticleNameMap,
-//                    "data/clean/graph_file_first_100.mtx", "data/clean/idmap_file_first_100.txt");
-//        }
-//        
+//                buildWikiIDtoArticleNameMap("data/raw/page.csv");            
+//
 //        /* CREATE FULL GRAPH & MAP FILES (TAKES ~15 MIN) */
-//        boolean createFull = true;   // << Toggle to "true" to generate.
-//        if (createFull) {
-//            parseLinkData("data/raw/link_annotated_text.jsonl", wikiIDtoArticleNameMap,
-//                    "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt");         
-//        }
-//        
+//        parseLinkData("data/raw/link_annotated_text.jsonl", wikiIDtoArticleNameMap,
+//                "data/clean/full_graph_file.mtx", "data/clean/full_idmap_file.txt");         
+//
 //        long endTime   = System.nanoTime();
 //        long totalTime = endTime - startTime;
 //        System.out.println("Time to run: " + totalTime / 1000000000. + " seconds");
-//        
+//
 //    }
 
 }
