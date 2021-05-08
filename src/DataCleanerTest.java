@@ -67,14 +67,7 @@ public class DataCleanerTest {
         assertEquals("Aristotle", m.get((long) 308));
         
     }
-    
-    @Test
-    public void testParseLinkDataExceptions() {
-        
 
-    }
-    
-    
     @Test
     public void testParseLinkData() {
         
@@ -88,7 +81,6 @@ public class DataCleanerTest {
         toDelete = new File("temp.txt");
         toDelete.delete();
         
-    }
-        
+    }        
 
 }
