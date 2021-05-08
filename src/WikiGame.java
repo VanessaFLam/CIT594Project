@@ -48,7 +48,6 @@ public class WikiGame implements IWikiGame {
         loadEdges(graphFile);
 
     }
-
     public int loadNodes(String filePath) {
 
         final String logPath = "data/logs/load_nodes_error_log.txt";
@@ -129,7 +128,8 @@ public class WikiGame implements IWikiGame {
         }
 
     }
-
+    
+    @Override
     public int loadEdges(String filePath) {
 
         final String logPath = "data/logs/load_edges_error_log.txt";
@@ -232,7 +232,6 @@ public class WikiGame implements IWikiGame {
 
     @Override
     public Collection<Integer> findPathHops(int source, int destination) {
-
         // ========== VALIDATE INPUT ===========
 
         // validate source and destination
@@ -321,12 +320,6 @@ public class WikiGame implements IWikiGame {
     @Override
     public Collection<Integer> findPathSection(int source, int destination) {
         return dijkstra(source, destination, 0);
-    }
-
-    @Override
-    public int countConnectedComponents() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /**
