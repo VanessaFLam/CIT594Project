@@ -35,7 +35,7 @@ public class DataCleanerTest {
          * 309,853997,An American in Paris,2156
          */
         
-        m = DataCleaner.buildWikiIDtoArticleNameMap("data/raw/page_first_10_bad.csv");
+        m = DataCleaner.buildWikiIDtoArticleNameMap("data/test/page_first_10_bad.csv");
         assertEquals(8, m.size());
         assertTrue(m.containsKey((long) 308));
         assertEquals("Aristotle", m.get((long) 308));
@@ -61,7 +61,8 @@ public class DataCleanerTest {
          */
         
         // test
-        Map<Long, String> m = DataCleaner.buildWikiIDtoArticleNameMap("data/raw/page_first_10.csv");
+        Map<Long, String> m = DataCleaner.buildWikiIDtoArticleNameMap(
+                                                    "data/test/page_first_10.csv");
         assertEquals(9, m.size());
         assertTrue(m.containsKey((long) 308));
         assertEquals("Aristotle", m.get((long) 308));
@@ -74,7 +75,7 @@ public class DataCleanerTest {
         Map<Long, String> m = DataCleaner.buildWikiIDtoArticleNameMap("data/raw/page.csv");
         assertNull(DataCleaner.parseLinkData("bad file", m, null, null));
         assertEquals("336\t335", 
-                        DataCleaner.parseLinkData("data/raw/link_annotated_text_first_1.jsonl", m, 
+                        DataCleaner.parseLinkData("data/test/link_annotated_text_first_1.jsonl", m, 
                                                   "temp.mtx", "temp.txt"));
         File toDelete = new File("temp.mtx");
         toDelete.delete();

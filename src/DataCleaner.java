@@ -249,7 +249,7 @@ public class DataCleaner {
                 outRows++;
                 if ((outRows % (linksCount / 20)) == 0) {
                     System.out.println(outRows + " rows copied (" 
-                                + Math.round((float) (100 * outRows) / linksCount) + "%) ...");;
+                                + Math.round((float) (100 * outRows) / linksCount) + "%) ...");
                 }
                 graphBW.write(line + "\n");
                 graphBW.flush();
