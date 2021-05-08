@@ -116,7 +116,7 @@ public class WikiGameRunner {
 
         // Load graph.
         if (print_progress) {
-            System.out.println("\tLoading graph (~?-? seconds expected) ... ");
+            System.out.println("\tLoading graph (90 seconds expected) ... ");
             startTime = System.nanoTime();
         }
         wg.loadGraph(id_map_file, graph_file);
