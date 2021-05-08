@@ -1,6 +1,8 @@
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,7 +84,11 @@ public class WikiGameTest {
 	     final String id_map_file   = "data/test/test_id_map_small_1.txt";
 	        
 	        WikiGame wg = new WikiGame();
-	        assertEquals("61 61 61", wg.loadNodes(id_map_file));
+	        assertEquals(63, wg.loadNodes(id_map_file));
+	        
+	        // check map sizes
+	        assertEquals(63, wg.getWikiIDtoNodeID().size());
+	        assertEquals(63, wg.getArticleNametoNodeIDs().size());
 
 	    }
 	   
@@ -95,7 +101,27 @@ public class WikiGameTest {
           wg.loadNodes(id_map_file);
           int numOfEdges = wg.loadEdges(graph_file);
           
-          assertEquals(121,numOfEdges);
+          assertEquals(127,numOfEdges);
+       }
+       @Test
+       public void testLoadNodesBadFile() {
+           final String id_map_file   = "nonsense.txt";
+           
+           WikiGame wg = new WikiGame();
+           assertEquals(-1, wg.loadNodes(id_map_file));
+           
+       }
+       
+       @Test
+       public void testLoadEdgesBadFile() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "gibberish.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadNodes(id_map_file);
+           int numOfEdges = wg.loadEdges(graph_file);
+           
+           assertEquals(-1,numOfEdges);
        }
        
        @Test
@@ -108,8 +134,8 @@ public class WikiGameTest {
            Graph g = wg.getG();
            
            // test node and edge counts
-           assertEquals(61, g.nodeCount());
-           assertEquals(121, g.edgeCount());
+           assertEquals(63, g.nodeCount());
+           assertEquals(127, g.edgeCount());
            
            // test nodes
            
@@ -167,6 +193,36 @@ public class WikiGameTest {
        }
        
        @Test
+       public void testHopsOutOfBounds() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           assertNull(wg.findPath(-1, 40, "hops"));
+           
+           assertNull(wg.findPath(0, 140, "hops"));
+       }
+       
+       @Test
+       public void testPathsDefault() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           // Musical Instrument to Indus River
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(0,5,15,40));
+           assertEquals(ans1,wg.findPath(0, 40, "nonsense"));
+           
+           // Musical Instrument to Fungus
+           List<Integer> ans2 = new LinkedList<Integer>(Arrays.asList(0,2,12,16,42,45,50));
+           assertEquals(ans2 ,wg.findPath(0, 50, "wrong type"));
+       }
+       
+       @Test
        public void testHopsNoPath() {
            final String id_map_file   = "data/test/test_id_map_small_1.txt";
            final String graph_file    = "data/test/test_graph_small_1.mtx";
@@ -179,21 +235,74 @@ public class WikiGameTest {
            assertEquals(ans1,wg.findPath(33, 37, "hops"));
        }
        
-//       @Test
-//       public void testSection() {
-//           final String id_map_file   = "data/test/test_id_map_small_1.txt";
-//           final String graph_file    = "data/test/test_graph_small_1.mtx";
-//           
-//           WikiGame wg = new WikiGame();
-//           wg.loadGraph(id_map_file, graph_file);
-//           
-//           // Musical Instrument to Indus River
-//           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(0,5,15,40));
-//           assertEquals(ans1,wg.findPath(0, 40, "hops"));
-//           
-//           // Musical Instrument to Fungus
-//           List<Integer> ans2 = new LinkedList<Integer>(Arrays.asList(0,2,12,16,42,45,50));
-//           assertEquals(ans2 ,wg.findPath(0, 50, "hops"));
-//       }
+       @Test
+       public void testDijkstraOutOfBounds() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           assertNull(wg.findPath(-1, 40, "section"));
+           assertNull(wg.findPath(0, 140, "indegree"));
+           assertNull(wg.findPath(-1, 140, "outdegree"));
+       }
+       
+       @Test
+       public void testSection() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           // Goat to Fungus
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(42,43,46,51,56,50));
+           assertEquals(ans1,wg.findPath(42, 50, "section"));
+           
+       }
+       
+       @Test
+       public void testOutdegree() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           // Musical Instrument to trumpet
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(0,6,25,61,26,9));
+           assertEquals(ans1,wg.findPath(0, 9, "outdegree"));
+       }
+       
+       @Test
+       public void testIndegree() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           
+           // Feather to Amphibean
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(53,57,62,43));
+           assertEquals(ans1,wg.findPath(53, 43, "indegree"));
+       }
+       
+       @Test
+       public void testTranslateToArticleNames() {
+           final String id_map_file   = "data/test/test_id_map_small_1.txt";
+           final String graph_file    = "data/test/test_graph_small_1.mtx";
+           
+           WikiGame wg = new WikiGame();
+           wg.loadGraph(id_map_file, graph_file);
+           // Musical Instrument to trumpet
+           List<Integer> path = new LinkedList<Integer>(Arrays.asList(0,6,25,61,26,9));
+           Collection<String> namePath = new ArrayList<String>(Arrays.asList("musical instrument", "bagpipes", "reed", "saxophone", "brass", "trumpet"));
+           assertEquals(namePath,wg.translateToArticleNames(path));
+           
+           
+       }
+       
+       
 
 }

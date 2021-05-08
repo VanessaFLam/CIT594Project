@@ -1,4 +1,4 @@
-61
+63
 0	27406894	Musical Instrument
 1	46734063	Horn
 2	7950	Drum
@@ -60,3 +60,5 @@
 58	33583	World Health Organization
 59	43986	Prokaryote
 60	706020	Pillow
+61	26795	Saxophone
+62	427445	Hoof
