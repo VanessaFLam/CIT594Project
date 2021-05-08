@@ -58,7 +58,8 @@ public interface IWikiGame {
      * <li> "outdegree" - the outdegree of the destination article
      * <li> "section" - how far down the page the link is
      * </ul>
-     * @return (Collection< Integer >) collection of node indices in the path from source to destination
+     * @return (Collection&ltInteger&gt) collection of node 
+     * indices in the path from source to destination
      */
     public Collection<Integer> findPath(int source, int destination, String type);
     
@@ -68,7 +69,8 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
+     * @return (Collection&ltInteger&gt) collection of node 
+     * indices in the path from source to destination
      */
     public Collection<Integer> findPathHops(int source, int destination);
     
@@ -80,7 +82,8 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
+     * @return (Collection&ltInteger&gt) collection of node 
+     * indices in the path from source to destination
      */
     public Collection<Integer> findPathIndegree(int source, int destination);
     
@@ -92,7 +95,8 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
+     * @return (Collection&ltInteger&gt) collection of node 
+     * indices in the path from source to destination
      */
     public Collection<Integer> findPathOutdegree(int source, int destination);
     
@@ -104,7 +108,8 @@ public interface IWikiGame {
      * 
      * @param source
      * @param destination
-     * @return (Collection&ltInteger&gt) collection of node indices in the path from source to destination
+     * @return (Collection&ltInteger&gt) collection of node 
+     * indices in the path from source to destination
      */
     public Collection<Integer> findPathSection(int source, int destination);
            
