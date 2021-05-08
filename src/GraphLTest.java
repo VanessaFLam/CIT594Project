@@ -109,7 +109,7 @@ public class GraphLTest {
 //            g.addEdge(0, i, i*4);      
 //        }
         
-        assertEquals(12,g.edgeCount());
+        assertEquals(6,g.edgeCount());
         for (int i = 1; i < 7; i++) {
             assertEquals(i*3,g.weight(0, 7-i));
         }

@@ -89,12 +89,14 @@ public class GraphL implements Graph {
         Edge curr = find(v, w);
         if ((curr.next != null) && (curr.next.vertex == w)) {
             curr.next.weight = wgt;
-        } else {
-            curr.next = new Edge(w, wgt, curr, curr.next);
-            if (curr.next.next != null) {
-                curr.next.next.prev = curr.next;
-            }
+            return;
         }
+        
+        curr.next = new Edge(w, wgt, curr, curr.next);
+        if (curr.next.next != null) {
+            curr.next.next.prev = curr.next;
+        }
+        
         numEdge++;
     }
 
