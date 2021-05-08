@@ -14,12 +14,14 @@ public class WikiGameRunner {
         int nodeID;
         while (true) {
             if (nodeIDs == null) {
-                System.out.println("This Wikipedia page does not exist, please input a different " + type + ":");
+                System.out.println("This Wikipedia page does not exist, "
+                        + "please input a different " + type + ":");
                 articleName = s.nextLine();
                 lowerArticleName = articleName.toLowerCase();
                 nodeIDs = (ArrayList<Integer>) map.get(lowerArticleName);
             } else if (nodeIDs.size() > 1) {
-                System.out.println("There are several articles with that name. We will choose one at random for you");
+                System.out.println("There are several articles with that name. "
+                        + "We will choose one at random for you");
                 System.out.println(nodeIDs);
                 Random r = new Random();
                 int num = r.nextInt(nodeIDs.size()) - 1;
@@ -30,7 +32,8 @@ public class WikiGameRunner {
                 nodeID = nodeIDs.get(0);
                 break;
             } else {
-                System.out.println("There are no Wikipedia pages with this name, please input a different " + type + ":");
+                System.out.println("There are no Wikipedia pages with this name, "
+                        + "please input a different " + type + ":");
                 articleName = s.nextLine();
                 nodeIDs = (ArrayList<Integer>) map.get(lowerArticleName);
             }
@@ -99,7 +102,7 @@ public class WikiGameRunner {
         final String graph_file = "data/test/smallest_test.mtx";
 
         // Toggle for print statements.
-        final boolean print_progress = WikiGame.printProgress;
+        final boolean print_progress = WikiGame.isPrintProgress();
         long startTime = 0;
         long endTime = 0;
         long elapsedTime = 0;

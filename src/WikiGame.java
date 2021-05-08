@@ -23,16 +23,13 @@ public class WikiGame implements IWikiGame {
     private Map<Integer, Integer> wikiIDtoNodeID;
     private Map<String, Collection<Integer>> articleNametoNodeIDs;
 
-    public static final Integer defaultEdgeWeight = 1;
-    public static boolean printProgress = true;
+    private static boolean printProgress = true;
 
     // =============================================================================
     // = CONSTRUCTOR
     // =============================================================================
 
-    public static boolean isPrintProgress() {
-        return printProgress;
-    }
+    
 
     public WikiGame() {
         g = new GraphL();
@@ -71,7 +68,8 @@ public class WikiGame implements IWikiGame {
             int counter = 0;
 
             if (printProgress) {
-                System.out.println("\t\tLoading node data. " + numOfNodes + " nodes in graph ...");
+                System.out.println("\t\tLoading node data. " 
+                        + numOfNodes + " nodes in graph ...");
             }
 
             // Read each line in the file.
@@ -102,7 +100,8 @@ public class WikiGame implements IWikiGame {
                     counter++;
                     if (printProgress) {
                         if ((counter % (numOfNodes / 20)) == 0) {
-                            System.out.println("\t\t\t" + counter + " nodes processed ("
+                            System.out.println("\t\t\t" + counter + 
+                                    " nodes processed ("
                                     + Math.round((float) (100 * counter) / numOfNodes) + "%) ...");
                         }
                     }
@@ -179,7 +178,8 @@ public class WikiGame implements IWikiGame {
                     nodeIDTo.incrementIndegree();
                     if (printProgress) {
                         if ((counter % (numOfEdges / 20)) == 0) {
-                            System.out.println("\t\t\t" + counter + " edges processed ("
+                            System.out.println("\t\t\t" + counter + 
+                                    " edges processed ("
                                     + Math.round((double) (100 * counter) / numOfEdges) + "%) ...");
                         }
                     }
@@ -236,7 +236,8 @@ public class WikiGame implements IWikiGame {
         // ========== VALIDATE INPUT ===========
 
         // validate source and destination
-        if (source >= g.nodeCount() || source < 0 || destination >= g.nodeCount() || destination < 0) {
+        if (source >= g.nodeCount() || source < 0 || destination 
+                >= g.nodeCount() || destination < 0) {
             return null;
         }
 
@@ -269,7 +270,6 @@ public class WikiGame implements IWikiGame {
             v = q.poll();
 
             // call neighbors and iterate over them
-            // TODO: decide what g.neighbors is returning - collection or array
             int[] neighbors = g.neighbors(v); 
             for (int i = 0; i < neighbors.length; i++) {
                 u = neighbors[i];
@@ -370,7 +370,8 @@ public class WikiGame implements IWikiGame {
         // ========== VALIDATE INPUT ===========
 
         // validate source and destination
-        if (source >= g.nodeCount() || source < 0 || destination >= g.nodeCount() || destination < 0) {
+        if (source >= g.nodeCount() || source < 0 || destination 
+                >= g.nodeCount() || destination < 0) {
             return null;
         }
 
@@ -503,9 +504,9 @@ public class WikiGame implements IWikiGame {
     public Map<String, Collection<Integer>> getArticleNametoNodeIDs() {
         return articleNametoNodeIDs;
     }
-    
-    public static Integer getDefaultedgeweight() {
-        return defaultEdgeWeight;
+
+    static boolean isPrintProgress() {
+        return printProgress;
     }
 
 }
