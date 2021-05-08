@@ -82,7 +82,7 @@ public class WikiGameTest {
 	     final String id_map_file   = "data/test/test_id_map_small_1.txt";
 	        
 	        WikiGame wg = new WikiGame();
-	        assertEquals("61 61 61", wg.loadNodes(id_map_file));
+	        assertEquals(61, wg.loadNodes(id_map_file));
 
 	    }
 	   
