@@ -98,15 +98,14 @@ public class WikiGameRunner {
         final String id_map_file = "data/test/smallest_map.txt";
         final String graph_file = "data/test/smallest_test.mtx";
 
-     // Create new Wikigame. Graph and maps are empty, numOfNodes = 0.
-        WikiGame wg = new WikiGame();
         // Toggle for print statements.
-        final boolean print_progress = wg.isPrintProgress();
+        final boolean print_progress = WikiGame.printProgress;
         long startTime = 0;
         long endTime = 0;
         long elapsedTime = 0;
 
-        
+        // Create new Wikigame. Graph and maps are empty, numOfNodes = 0.
+        WikiGame wg = new WikiGame();
         System.out.println("Welcome to the Wikipedia Game!");
         if (print_progress) {
             System.out.println("Building graph ...");
