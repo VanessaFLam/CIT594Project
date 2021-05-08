@@ -68,5 +68,27 @@ public class DataCleanerTest {
         
     }
     
+    @Test
+    public void testParseLinkDataExceptions() {
+        
+
+    }
+    
+    
+    @Test
+    public void testParseLinkData() {
+        
+        Map<Long, String> m = DataCleaner.buildWikiIDtoArticleNameMap("data/raw/page.csv");
+        assertNull(DataCleaner.parseLinkData("bad file", m, null, null));
+        assertEquals("336\t335", 
+                        DataCleaner.parseLinkData("data/raw/link_annotated_text_first_1.jsonl", m, 
+                                                  "temp.mtx", "temp.txt"));
+        File toDelete = new File("temp.mtx");
+        toDelete.delete();
+        toDelete = new File("temp.txt");
+        toDelete.delete();
+        
+    }
+        
 
 }

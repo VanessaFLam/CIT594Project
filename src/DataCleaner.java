@@ -225,7 +225,6 @@ public class DataCleaner {
             // Logging.
             System.out.println("Initial processing complete. " + inRows + " processed.");
             System.out.println("Header: " + header);
-            System.out.println("Number of nodes: " + pagesCount);
             
             // Write headers to new files and copy temp file contents.            
             graphBR = new BufferedReader(new FileReader("temp_graph.mtx"));
@@ -248,8 +247,9 @@ public class DataCleaner {
             line = graphBR.readLine();
             while (line != null) {
                 outRows++;
-                if ((outRows % 10000) == 0) {
-                    System.out.println(outRows + " of " + linksCount + " rows copied...");
+                if ((outRows % (linksCount / 20)) == 0) {
+                    System.out.println(outRows + " rows copied (" 
+                                + Math.round((float) (100 * outRows) / linksCount) + "%) ...");;
                 }
                 graphBW.write(line + "\n");
                 graphBW.flush();
@@ -272,8 +272,6 @@ public class DataCleaner {
             
             return header;
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
