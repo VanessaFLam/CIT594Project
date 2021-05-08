@@ -257,7 +257,7 @@ public class WikiGameTest {
            wg.loadGraph(id_map_file, graph_file);
            
            // Goat to Fungus
-           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(42,43,46,51,56,50));
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(42,43,45,50));
            assertEquals(ans1,wg.findPath(42, 50, "section"));
            
        }
