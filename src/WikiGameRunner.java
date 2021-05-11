@@ -95,11 +95,15 @@ public class WikiGameRunner {
     public static void main(String[] args) {
         WikiGameRunner wgr = new WikiGameRunner();
         // File paths all in one place.
-        final String id_map_file   = "data/clean/full_idmap_file.txt";
-        final String graph_file    = "data/clean/full_graph_file.mtx";
+      final String id_map_file   = "data/test/test_id_map_small_1.txt";
+      final String graph_file    = "data/test/test_graph_small_1.mtx";
 
 //        final String id_map_file = "data/test/smallest_map.txt";
 //        final String graph_file = "data/test/smallest_test.mtx";
+        
+        ///This is the big file, it does not exist in this git
+//        final String id_map_file   = "data/clean/full_idmap_file.txt";
+//        final String graph_file    = "data/clean/full_graph_file.mtx";
 
         // Toggle for print statements.
         final boolean print_progress = WikiGame.isPrintProgress();

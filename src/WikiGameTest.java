@@ -170,9 +170,7 @@ public class WikiGameTest {
            assertEquals("pillow", n4.getName());
            assertEquals(0, n4.getOutdegree());
            assertEquals(1, n4.getIndegree());
-           
-           // test edges
-           
+                      
        }
        
        @Test
@@ -257,7 +255,7 @@ public class WikiGameTest {
            wg.loadGraph(id_map_file, graph_file);
            
            // Goat to Fungus
-           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(42,43,45,50));
+           List<Integer> ans1 = new LinkedList<Integer>(Arrays.asList(42,43,46,51,56,50));
            assertEquals(ans1,wg.findPath(42, 50, "section"));
            
        }
